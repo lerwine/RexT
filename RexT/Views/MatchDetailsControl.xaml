@@ -1,0 +1,73 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Erwine.Leonard.T.RexT.ViewModel.Home"
+             xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk" 
+             xmlns:Converters="clr-namespace:Erwine.Leonard.T.RexT.Converters" 
+             x:Class="Erwine.Leonard.T.RexT.Views.MatchDetailsControl"
+             mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.DataContext>
+        <vm:MatchResultItem />
+    </UserControl.DataContext>
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBlock TextWrapping="Wrap" FontWeight="Bold" Text="Groups" VerticalAlignment="Bottom" Grid.ColumnSpan="3" Margin="0,0,0,8" />
+        <Button Content="{Binding ShowGroups, Converter={StaticResource BooleanToToggleButtonText}}" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Right" 
+                Command="{Binding ToggleGroupListCommand, Mode=OneWay}" Margin="0,0,8,8" />
+        <sdk:DataGrid Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" ItemsSource="{Binding Groups}" AutoGenerateColumns="False" IsReadOnly="True" 
+                      Visibility="{Binding ShowGroups, Converter={StaticResource BooleanToVisibiltyConverter}}" Grid.ColumnSpan="2" Margin="0,0,0,8">
+            <sdk:DataGrid.Columns>
+                <sdk:DataGridTextColumn Binding="{Binding Success, Converter={StaticResource BooleanToTextConverter}}" Header="Success" IsReadOnly="True" />
+                <sdk:DataGridTextColumn Binding="{Binding Number}" Header="Grp Num" IsReadOnly="True" />
+                <sdk:DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" />
+                <sdk:DataGridTextColumn Binding="{Binding Index}" Header="Index" IsReadOnly="True" />
+                <sdk:DataGridTextColumn Binding="{Binding Length}" Header="Length" IsReadOnly="True" />
+                <sdk:DataGridTextColumn Binding="{Binding Value}" Header="Value" IsReadOnly="True" Width="*" />
+                <sdk:DataGridTextColumn Binding="{Binding Captures, Converter={StaticResource CollectionToCountConverter}}" Header="Captures" IsReadOnly="True" />
+            </sdk:DataGrid.Columns>
+            <sdk:DataGrid.RowDetailsTemplate>
+                <DataTemplate/>
+            </sdk:DataGrid.RowDetailsTemplate>
+        </sdk:DataGrid>
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Groups, Converter={StaticResource CollectionToCountOrNoConverter}}" TextWrapping="Wrap" 
+                   VerticalAlignment="Top" Visibility="{Binding ShowGroups, Converter={StaticResource InverseBooleanToVisibiltyConverter}}" Margin="0,0,0,8" />
+        <TextBlock Grid.Row="1" Grid.Column="2" Text=" items." TextWrapping="Wrap" VerticalAlignment="Top" 
+                   Visibility="{Binding ShowGroups, Converter={StaticResource InverseBooleanToVisibiltyConverter}}" Margin="0,0,0,8" />
+        <TextBlock Grid.Row="2" TextWrapping="Wrap" Text="No groups." Visibility="{Binding ShowEmptyGroups, Converter={StaticResource BooleanToVisibiltyConverter}}" 
+                   VerticalAlignment="Top" Grid.RowSpan="3" Margin="0,0,0,8" />
+        <TextBlock Grid.Row="3" TextWrapping="Wrap" FontWeight="Bold" Text="Captures" Grid.ColumnSpan="3"  VerticalAlignment="Bottom" Margin="0,0,0,8" />
+        <Button Content="{Binding ShowGroups, Converter={StaticResource BooleanToToggleButtonText}}" Grid.Row="4" VerticalAlignment="Top" HorizontalAlignment="Right" 
+                Command="{Binding ToggleCapturesCommand, Mode=OneWay}" Margin="0,0,8,0" />
+        <sdk:DataGrid Grid.Column="1" Grid.Row="4" VerticalAlignment="Top" ItemsSource="{Binding Captures}" IsReadOnly="True" AutoGenerateColumns="False" 
+                      Visibility="{Binding ShowCaptures, Converter={StaticResource BooleanToVisibiltyConverter}}" Grid.ColumnSpan="2">
+            <sdk:DataGrid.Columns>
+                <sdk:DataGridTextColumn Binding="{Binding Index}" Header="Index" IsReadOnly="True" />
+                <sdk:DataGridTextColumn Binding="{Binding Length}" Header="Length" IsReadOnly="True" />
+                <sdk:DataGridTextColumn Binding="{Binding Value}" Header="Value" IsReadOnly="True" Width="*" />
+            </sdk:DataGrid.Columns>
+            <sdk:DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Value}" TextWrapping="Wrap" />
+                </DataTemplate>
+            </sdk:DataGrid.RowDetailsTemplate>
+        </sdk:DataGrid>
+        <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Captures, Converter={StaticResource CollectionToCountOrNoConverter}}" VerticalAlignment="Top" 
+                   Visibility="{Binding ShowCaptures, Converter={StaticResource InverseBooleanToVisibiltyConverter}}" />
+        <TextBlock Grid.Row="4" Grid.Column="2" Text="items." TextWrapping="Wrap" VerticalAlignment="Top" 
+                   Visibility="{Binding ShowCaptures, Converter={StaticResource InverseBooleanToVisibiltyConverter}}" />
+        <TextBlock Grid.Row="5" TextWrapping="Wrap" Text="No captures." Visibility="{Binding ShowEmptyCaptures, Converter={StaticResource BooleanToVisibiltyConverter}}" 
+                   VerticalAlignment="Top" Margin="0,8,0,0" />
+    </Grid>
+</UserControl>
