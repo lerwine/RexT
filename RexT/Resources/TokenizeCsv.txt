@@ -1,0 +1,32 @@
+(?#
+	Group "f" indicates that a full column value was retrieved.
+	Group "p" indicates that the column was not terminated - probably continues to next line.
+	Group "r": indicates that the last column - or row - was properly terminated.
+)
+(?(?= " )
+	(?: " )
+	(?(?= [^"]* (""[^"]*)* " (,|\r\n?|\n|$) )
+		(?<f> [^"]* (?: ""[^"]*)* )
+		(?: " (?(?= , ) , | (?<r> (\r\n?|\n)? ) ) )
+	|
+		(?<p> [^"]* (?: ""[^"]*)* )
+		(?: " )?
+	)
+|
+	(?(?= [^",\r\n]* " )
+		(?<p> [^",\r\n]* )
+	|
+		(?<f>
+			(?(?<= (^|,) )
+				[^",\r\n]*
+			|
+				[^",\r\n]+
+			)
+		)
+		(?(?= , )
+			,
+		|
+			(?<r> (\r\n?|\n)? )
+		)
+	)
+)
