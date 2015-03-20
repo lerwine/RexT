@@ -607,6 +607,7 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
         {
             this.Options = new RegexOptionsViewModel();
             this.TextResults = new ObservableCollection<TextResultItem>();
+            this.MatchResults = new ObservableCollection<MatchResultItem>();
         }
     }
 }
