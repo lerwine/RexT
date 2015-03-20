@@ -39,7 +39,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <TextBlock Text="Pattern:" Grid.ColumnSpan="4" VerticalAlignment="Bottom" FontWeight="Bold"/>
-            <TextBox Grid.Row="1" Grid.ColumnSpan="4" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" VerticalAlignment="Top" />
+            <TextBox Grid.Row="1" Grid.ColumnSpan="4" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" VerticalAlignment="Top" Text="{Binding Pattern, Mode=TwoWay}" />
             <TextBlock Text="Options:" Grid.Row="2" Grid.ColumnSpan="4" VerticalAlignment="Bottom" FontWeight="Bold" />
             <ItemsControl ItemsSource="{Binding Options}" Grid.Row="3" ScrollViewer.HorizontalScrollBarVisibility="Auto" Grid.ColumnSpan="4" VerticalAlignment="Top">
                 <ItemsControl.ItemsPanel>
@@ -66,7 +66,7 @@
             <CheckBox Content="Limit Count" Grid.Row="6" IsChecked="{Binding SpecifyCount, Mode=TwoWay}" Visibility="{Binding ShowCountOption, Converter={StaticResource BooleanToVisibiltyConverter}}" VerticalAlignment="Bottom"/>
             <TextBox Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="6" TextWrapping="Wrap" Text="{Binding CountValue, Mode=TwoWay}" IsEnabled="{Binding SpecifyCount}" Visibility="{Binding ShowCountOption, Converter={StaticResource BooleanToVisibiltyConverter}}" VerticalAlignment="Bottom"/>
             <TextBlock Grid.Row="7" TextWrapping="Wrap" Text="Input Text:" Grid.ColumnSpan="4" VerticalAlignment="Top" FontWeight="Bold" />
-            <TextBox Grid.ColumnSpan="4" Grid.Row="8" TextWrapping="Wrap" Text="Text to match" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" VerticalAlignment="Top"/>
+            <TextBox Grid.ColumnSpan="4" Grid.Row="8" TextWrapping="Wrap" Text="{Binding InputText, Mode=TwoWay}" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" VerticalAlignment="Top"/>
             <Button Content="Evaluate" HorizontalAlignment="Right" Grid.Row="9" VerticalAlignment="Top" Width="75" Grid.ColumnSpan="4" Command="{Binding EvaluateExpressionCommand, Mode=OneWay}"/>
             <TextBlock Grid.Row="10" TextWrapping="Wrap" Text="{Binding ErrorMessage, Mode=OneWay}" Grid.ColumnSpan="4" Foreground="Red" Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibiltyConverter}, Mode=OneWay}" VerticalAlignment="Top"/>
             <sdk:DataGrid Grid.ColumnSpan="4" Grid.Row="11" ItemsSource="{Binding TextResults}" IsReadOnly="True" AutoGenerateColumns="False" Visibility="{Binding ShowTextResultListing, Converter={StaticResource BooleanToVisibiltyConverter}, Mode=OneWay}" VerticalAlignment="Top" >

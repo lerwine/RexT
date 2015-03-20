@@ -21,13 +21,13 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <TextBlock Grid.ColumnSpan="3" TextWrapping="Wrap" FontWeight="Bold" Text="Captures" VerticalAlignment="Bottom" Margin="0,0,0,8"/>
-        <Button Content="+" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,8,0" />
+        <Button Content="{Binding ShowCaptures, Converter={StaticResource BooleanToToggleButtonText}}" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,8,0" Command="{Binding ToggleCapturesCommand, Mode=OneWay}" />
         <sdk:DataGrid Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" ItemsSource="{Binding Captures}" AutoGenerateColumns="False" IsReadOnly="True" 
                       Visibility="{Binding ShowCaptures, Converter={StaticResource BooleanToVisibiltyConverter}}" Grid.ColumnSpan="2" Grid.RowSpan="2">
             <sdk:DataGrid.Columns>
-                <sdk:DataGridTextColumn Binding="{Binding Index}" Header="Index" IsReadOnly="True" />
-                <sdk:DataGridTextColumn Binding="{Binding Length}" Header="Length" IsReadOnly="True" />
-                <sdk:DataGridTextColumn Binding="{Binding Value}" Header="Value" IsReadOnly="True" Width="*" />
+                <sdk:DataGridTextColumn Binding="{Binding Path=Index}" Header="Index" IsReadOnly="True" />
+                <sdk:DataGridTextColumn Binding="{Binding Path=Length}" Header="Length" IsReadOnly="True" />
+                <sdk:DataGridTextColumn Binding="{Binding Path=Value}" Header="Value" IsReadOnly="True" Width="*" />
             </sdk:DataGrid.Columns>
             <sdk:DataGrid.RowDetailsTemplate>
                 <DataTemplate>
