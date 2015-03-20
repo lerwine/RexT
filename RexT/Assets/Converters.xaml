@@ -1,0 +1,13 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Converters="clr-namespace:Erwine.Leonard.T.RexT.Converters">
+    <Converters:BooleanToTextConverter x:Key="BooleanToTextConverter"/>
+    <Converters:BooleanToVisibiltyConverter x:Key="BooleanToVisibiltyConverter" />
+    <Converters:BooleanToVisibiltyConverter x:Key="InverseBooleanToVisibiltyConverter" TrueValue="Collapsed" FalseValue="Visible" NullValue="Visible" />
+    <Converters:CollectionToTextConverter x:Key="CollectionToCountConverter" />
+    <Converters:BooleanToTextConverter x:Key="BooleanToToggleButtonText" TrueValue="-" FalseValue="+" NullValue="+" />
+    <Converters:CollectionToVisibilityConverter x:Key="CollectionToVisibilityConverter" />
+    <Converters:CollectionToVisibilityConverter x:Key="InverseCollectionToVisibilityConverter" EmptyValue="Visible" NonEmptyValue="Collapsed" NullValue="Visible" />
+    <Converters:CollectionToTextConverter x:Key="CollectionToCountOrNoConverter" EmptyValue="No" />
+</ResourceDictionary>
