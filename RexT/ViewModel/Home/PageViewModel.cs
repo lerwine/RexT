@@ -192,17 +192,13 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         protected virtual void OnSingleMatchOptionPropertyChanged(bool oldValue, bool newValue)
         {
-            if (newValue)
-            {
-                this.ShowCountOption = false;
-                this.MultiMatchOption = false;
-                this.ReplaceOption = false;
-                this.SplitOption = false;
+            if (!newValue)
                 return;
-            }
 
-            if (!this.MultiMatchOption && !this.ReplaceOption && !this.SplitOption)
-                this.SingleMatchOption = true;
+            this.ShowCountOption = false;
+            this.MultiMatchOption = false;
+            this.ReplaceOption = false;
+            this.SplitOption = false;
         }
 
         #endregion
@@ -224,17 +220,13 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         protected virtual void OnMultiMatchOptionPropertyChanged(bool oldValue, bool newValue)
         {
-            if (newValue)
-            {
-                this.ShowCountOption = false;
-                this.SingleMatchOption = false;
-                this.ReplaceOption = false;
-                this.SplitOption = false;
+            if (!newValue)
                 return;
-            }
 
-            if (!this.SingleMatchOption && !this.ReplaceOption && !this.SplitOption)
-                this.SingleMatchOption = true;
+            this.ShowCountOption = false;
+            this.SingleMatchOption = false;
+            this.ReplaceOption = false;
+            this.SplitOption = false;
         }
 
         #endregion
@@ -256,17 +248,13 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         protected virtual void OnReplaceOptionPropertyChanged(bool oldValue, bool newValue)
         {
-            if (newValue)
-            {
-                this.ShowCountOption = true;
-                this.SingleMatchOption = false;
-                this.MultiMatchOption = false;
-                this.SplitOption = false;
+            if (!newValue)
                 return;
-            }
 
-            if (!this.SingleMatchOption && !this.MultiMatchOption && !this.SplitOption)
-                this.SingleMatchOption = true;
+            this.ShowCountOption = true;
+            this.SingleMatchOption = false;
+            this.MultiMatchOption = false;
+            this.SplitOption = false;
         }
 
         #endregion
@@ -288,17 +276,13 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         protected virtual void OnSplitOptionPropertyChanged(bool oldValue, bool newValue)
         {
-            if (newValue)
-            {
-                this.ShowCountOption = true;
-                this.SingleMatchOption = false;
-                this.MultiMatchOption = false;
-                this.ReplaceOption = false;
+            if (!newValue)
                 return;
-            }
 
-            if (!this.SingleMatchOption && !this.MultiMatchOption && !this.ReplaceOption)
-                this.SingleMatchOption = true;
+            this.ShowCountOption = true;
+            this.SingleMatchOption = false;
+            this.MultiMatchOption = false;
+            this.ReplaceOption = false;
         }
 
         #endregion
