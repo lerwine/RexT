@@ -19,8 +19,12 @@
             if (textArray === undefined || textArray === null)
                 return textArray;
 
+            var arr = textArray;
+            if (!jQuery.isArray(arr))
+                arr = [arr];
+
             var shouldEscapeRe = /[\r\n",]/;
-            return textArray.map(function (s) {
+            return arr.map(function (s) {
                 if (shouldEscapeRe.test(s))
                     return '"' + s.replace('"', '""') + '"';
                 return s;
@@ -31,8 +35,12 @@
             if (textArray === undefined || textArray === null)
                 return textArray;
 
+            var arr = textArray;
+            if (!jQuery.isArray(arr))
+                arr = [arr];
+
             var shouldEscapeRe = /[\r\n~']/;
-            return textArray.map(function (s) {
+            return arr.map(function (s) {
                 if (shouldEscapeRe.test(s))
                     return '"' + s.replace("'", "''") + "'";
                 return s;
