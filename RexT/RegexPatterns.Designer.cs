@@ -61,6 +61,34 @@ namespace Erwine.Leonard.T.RexT {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (?(?= &quot; ))
+        ///	(?# Starts with quote )
+        ///	(?&lt;openQuote&gt; &quot; )
+        ///	(
+        ///		(?(?= &quot;))
+        ///			&quot;&quot;
+        ///		|
+        ///			[^&quot;]+
+        ///		)
+        ///	)*
+        ///	(?&lt;closeQuote&gt; &quot; (?= ($|[^&quot;]) ))
+        ///|
+        ///	(?# Does not start with quote)
+        ///	[^\r\n&quot;,]*
+        ///)
+        ///(?(?= ,)
+        ///	(?&lt;endCol&gt; , )
+        ///|
+        ///	(?&lt;endLine (\r\n?|\n|$) )
+        ///).
+        /// </summary>
+        internal static string AltTokenizeCsv {
+            get {
+                return ResourceManager.GetString("AltTokenizeCsv", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (?&lt;p&gt;
         ///	(
         ///		((?(?=\\).|[^\[\(\\]+))*

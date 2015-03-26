@@ -1,0 +1,20 @@
+(?(?= " ))
+	(?# Starts with quote )
+	(?<openQuote> " )
+	(
+		(?(?= "))
+			""
+		|
+			[^"]+
+		)
+	)*
+	(?<closeQuote> " (?= ($|[^"]) ))
+|
+	(?# Does not start with quote)
+	[^\r\n",]*
+)
+(?(?= ,)
+	(?<endCol> , )
+|
+	(?<endLine (\r\n?|\n|$) )
+)
