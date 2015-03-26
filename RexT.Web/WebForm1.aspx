@@ -66,7 +66,7 @@
                 }
             };
 
-            if (arg2narg2Name !== undefined && arg2Name !== null)
+            if (arg2Name !== undefined && arg2Name !== null)
                 endPoint.url += "&" + arg2Name + "=" + encodeURI(arg2Value);
 
             testHyperLink.href = endPoint.url;
