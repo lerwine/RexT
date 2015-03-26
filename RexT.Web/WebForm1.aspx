@@ -63,7 +63,7 @@
 
             testHyperLink.href = endPoint.url;
             testHyperLink.innerText = endPoint.url;
-            testResultsPre.innerText = "Waiting for response..." + endPoint.url;
+            testResultsPre.innerText = "Waiting for response...";
             $.ajax(endPoint);
             return false;
         }
