@@ -46,12 +46,29 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         #endregion
 
+        #region IsIndented Property Members
+
+        public const string PropertyName_IsIndented = "IsIndented";
+
+        public static readonly DependencyProperty IsIndentedProperty =
+            DependencyProperty.Register(TextResultItem.PropertyName_IsIndented, typeof(bool), typeof(TextResultItem),
+                new PropertyMetadata(false));
+
+        public bool IsIndented
+        {
+            get { return (bool)(this.GetValue(TextResultItem.IsIndentedProperty)); }
+            set { this.SetValue(TextResultItem.IsIndentedProperty, value); }
+        }
+
+        #endregion
+
         public TextResultItem() : this("") { }
 
-        public TextResultItem(string value)
+        public TextResultItem(string value, bool isIndented = false)
             : base()
         {
             this.Value = value;
+            this.IsIndented = isIndented;
         }
     }
 }

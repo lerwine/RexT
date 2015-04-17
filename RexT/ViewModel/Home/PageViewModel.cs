@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Xml;
 
 namespace Erwine.Leonard.T.RexT.ViewModel.Home
 {
@@ -47,30 +51,103 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
         public const string PropertyName_InputText = "InputText";
 
         public static readonly DependencyProperty InputTextProperty =
-            DependencyProperty.Register(PageViewModel.PropertyName_InputText, typeof(string), typeof(PageViewModel),
-                new PropertyMetadata("", (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
-                    (d as PageViewModel).OnInputTextPropertyChanged(e.OldValue as string, e.NewValue as string)));
+            DependencyProperty.Register(PageViewModel.PropertyName_InputText, typeof(ObservableCollection<InputTextItem>), typeof(PageViewModel),
+                new PropertyMetadata(null, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as PageViewModel).OnInputTextPropertyChanged((ObservableCollection<InputTextItem>)(e.OldValue), (ObservableCollection<InputTextItem>)(e.NewValue))));
 
-        public string InputText
+        public ObservableCollection<InputTextItem> InputText
         {
-            get
-            {
-                string s = this.GetValue(PageViewModel.InputTextProperty) as string;
-                if (s == null)
-                {
-                    s = "";
-                    this.SetValue(PageViewModel.InputTextProperty, s);
-                }
-
-                return s;
-            }
-            set { this.SetValue(PageViewModel.InputTextProperty, (value == null) ? "" : value); }
+            get { return (ObservableCollection<InputTextItem>)(this.GetValue(PageViewModel.InputTextProperty)); }
+            set { this.SetValue(PageViewModel.InputTextProperty, value); }
         }
 
-        protected virtual void OnInputTextPropertyChanged(string oldValue, string newValue)
+        protected virtual void OnInputTextPropertyChanged(ObservableCollection<InputTextItem> oldValue, ObservableCollection<InputTextItem> newValue)
         {
+            if (oldValue != null)
+            {
+                oldValue.CollectionChanged -= this.InputText_CollectionChanged;
+
+                foreach (InputTextItem item in oldValue)
+                    item.Delete -= this.InputTextItem_Delete;
+            }
+
+            if (newValue != null)
+            {
+                newValue.CollectionChanged += this.InputText_CollectionChanged;
+
+                foreach (InputTextItem item in newValue)
+                    item.Delete += this.InputTextItem_Delete;
+            }
+        }
+
+        void InputText_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems != null)
+            {
+                foreach (InputTextItem item in e.OldItems.OfType<InputTextItem>())
+                    item.Delete -= this.InputTextItem_Delete;
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (InputTextItem item in e.NewItems.OfType<InputTextItem>())
+                    item.Delete += this.InputTextItem_Delete;
+            }
+        }
+
+        void InputTextItem_Delete(object sender, EventArgs e)
+        {
+            this.InputText.Remove(sender as InputTextItem);
+        }
+
+        #endregion
+
+        #region EvalOperation Property Members
+
+        public const string PropertyName_EvalOperation = "EvalOperation";
+
+        public static readonly DependencyProperty EvalOperationProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_EvalOperation, typeof(OperationSettingsViewModel), typeof(PageViewModel),
+                new PropertyMetadata(null, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as PageViewModel).OnEvalOperationPropertyChanged((OperationSettingsViewModel)(e.OldValue), (OperationSettingsViewModel)(e.NewValue))));
+
+        public OperationSettingsViewModel EvalOperation
+        {
+            get { return (OperationSettingsViewModel)(this.GetValue(PageViewModel.EvalOperationProperty)); }
+            set { this.SetValue(PageViewModel.EvalOperationProperty, value); }
+        }
+
+        protected virtual void OnEvalOperationPropertyChanged(OperationSettingsViewModel oldValue, OperationSettingsViewModel newValue)
+        {
+            if (oldValue != null)
+                oldValue.ValueChanged -= this.EvalOperation_ValueChanged;
+
             if (newValue == null)
-                this.InputText = "";
+                this.EvalOperation = new OperationSettingsViewModel();
+            else
+            {
+                newValue.ValueChanged += this.EvalOperation_ValueChanged;
+                this.EvalOperation_ValueChanged(newValue, new OperationSettingsValueEventArgs(newValue.Value));
+            }
+        }
+
+        private void EvalOperation_ValueChanged(object sender, OperationSettingsValueEventArgs e)
+        {
+            switch (e.Value)
+            {
+                case DataModel.OperationType.SingleMatch:
+                    this.ShowCountOption = false;
+                    break;
+                case DataModel.OperationType.MultiMatch:
+                    this.ShowCountOption = true;
+                    break;
+                case DataModel.OperationType.Replace:
+                    this.ShowCountOption = false;
+                    break;
+                case DataModel.OperationType.Split:
+                    this.ShowCountOption = true;
+                    break;
+            }
         }
 
         #endregion
@@ -81,12 +158,32 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         public static readonly DependencyProperty OptionsProperty =
             DependencyProperty.Register(PageViewModel.PropertyName_Options, typeof(RegexOptionsViewModel), typeof(PageViewModel),
-                new PropertyMetadata(null));
+                new PropertyMetadata(null, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as PageViewModel).OnOptionsPropertyChanged((RegexOptionsViewModel)(e.OldValue), (RegexOptionsViewModel)(e.NewValue))));
 
         public RegexOptionsViewModel Options
         {
             get { return (RegexOptionsViewModel)(this.GetValue(PageViewModel.OptionsProperty)); }
-            private set { this.SetValue(PageViewModel.OptionsProperty, value); }
+            set { this.SetValue(PageViewModel.OptionsProperty, value); }
+        }
+
+        protected virtual void OnOptionsPropertyChanged(RegexOptionsViewModel oldValue, RegexOptionsViewModel newValue)
+        {
+            if (oldValue != null)
+                oldValue.ValueChanged -= this.Options_ValueChanged;
+
+            if (newValue == null)
+                this.Options = new RegexOptionsViewModel();
+            else
+            {
+                newValue.ValueChanged += this.Options_ValueChanged;
+                this.Options_ValueChanged(newValue, new RegexOptionsValueEventArgs(newValue.Value));
+            }
+        }
+
+        private void Options_ValueChanged(object sender, RegexOptionsValueEventArgs e)
+        {
+#warning not implemented
         }
 
         #endregion
@@ -97,7 +194,7 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         public static readonly DependencyProperty ErrorMessageProperty =
             DependencyProperty.Register(PageViewModel.PropertyName_ErrorMessage, typeof(string), typeof(PageViewModel),
-                new PropertyMetadata("", (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                new PropertyMetadata("Provide pattern and input, then click the \"Evaluate\" button to evaluate the regular expression pattern.", (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
                     (d as PageViewModel).OnErrorMessagePropertyChanged(e.OldValue as string, e.NewValue as string)));
 
         public string ErrorMessage
@@ -122,6 +219,12 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
                 this.ErrorMessage = "";
             else
                 this.HasError = !String.IsNullOrWhiteSpace(newValue);
+
+            if (this.HasError)
+            {
+                this.ShowMatchResultListing = false;
+                this.ShowTextResultListing = false;
+            }
         }
 
         #endregion
@@ -132,7 +235,7 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         public static readonly DependencyProperty HasErrorProperty =
             DependencyProperty.Register(PageViewModel.PropertyName_HasError, typeof(bool), typeof(PageViewModel),
-                new PropertyMetadata(false));
+                new PropertyMetadata(true));
 
         public bool HasError
         {
@@ -171,118 +274,6 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
         {
             if (newValue == null)
                 this.ReplacementText = "";
-        }
-
-        #endregion
-
-        #region SingleMatchOption Property Members
-
-        public const string PropertyName_SingleMatchOption = "SingleMatchOption";
-
-        public static readonly DependencyProperty SingleMatchOptionProperty =
-            DependencyProperty.Register(PageViewModel.PropertyName_SingleMatchOption, typeof(bool), typeof(PageViewModel),
-                new PropertyMetadata(true, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
-                    (d as PageViewModel).OnSingleMatchOptionPropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
-
-        public bool SingleMatchOption
-        {
-            get { return (bool)(this.GetValue(PageViewModel.SingleMatchOptionProperty)); }
-            set { this.SetValue(PageViewModel.SingleMatchOptionProperty, value); }
-        }
-
-        protected virtual void OnSingleMatchOptionPropertyChanged(bool oldValue, bool newValue)
-        {
-            if (!newValue)
-                return;
-
-            this.ShowCountOption = false;
-            this.MultiMatchOption = false;
-            this.ReplaceOption = false;
-            this.SplitOption = false;
-        }
-
-        #endregion
-
-        #region MultiMatchOption Property Members
-
-        public const string PropertyName_MultiMatchOption = "MultiMatchOption";
-
-        public static readonly DependencyProperty MultiMatchOptionProperty =
-            DependencyProperty.Register(PageViewModel.PropertyName_MultiMatchOption, typeof(bool), typeof(PageViewModel),
-                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
-                    (d as PageViewModel).OnMultiMatchOptionPropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
-
-        public bool MultiMatchOption
-        {
-            get { return (bool)(this.GetValue(PageViewModel.MultiMatchOptionProperty)); }
-            set { this.SetValue(PageViewModel.MultiMatchOptionProperty, value); }
-        }
-
-        protected virtual void OnMultiMatchOptionPropertyChanged(bool oldValue, bool newValue)
-        {
-            if (!newValue)
-                return;
-
-            this.ShowCountOption = false;
-            this.SingleMatchOption = false;
-            this.ReplaceOption = false;
-            this.SplitOption = false;
-        }
-
-        #endregion
-
-        #region ReplaceOption Property Members
-
-        public const string PropertyName_ReplaceOption = "ReplaceOption";
-
-        public static readonly DependencyProperty ReplaceOptionProperty =
-            DependencyProperty.Register(PageViewModel.PropertyName_ReplaceOption, typeof(bool), typeof(PageViewModel),
-                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
-                    (d as PageViewModel).OnReplaceOptionPropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
-
-        public bool ReplaceOption
-        {
-            get { return (bool)(this.GetValue(PageViewModel.ReplaceOptionProperty)); }
-            set { this.SetValue(PageViewModel.ReplaceOptionProperty, value); }
-        }
-
-        protected virtual void OnReplaceOptionPropertyChanged(bool oldValue, bool newValue)
-        {
-            if (!newValue)
-                return;
-
-            this.ShowCountOption = true;
-            this.SingleMatchOption = false;
-            this.MultiMatchOption = false;
-            this.SplitOption = false;
-        }
-
-        #endregion
-
-        #region SplitOption Property Members
-
-        public const string PropertyName_SplitOption = "SplitOption";
-
-        public static readonly DependencyProperty SplitOptionProperty =
-            DependencyProperty.Register(PageViewModel.PropertyName_SplitOption, typeof(bool), typeof(PageViewModel),
-                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
-                    (d as PageViewModel).OnSplitOptionPropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
-
-        public bool SplitOption
-        {
-            get { return (bool)(this.GetValue(PageViewModel.SplitOptionProperty)); }
-            set { this.SetValue(PageViewModel.SplitOptionProperty, value); }
-        }
-
-        protected virtual void OnSplitOptionPropertyChanged(bool oldValue, bool newValue)
-        {
-            if (!newValue)
-                return;
-
-            this.ShowCountOption = true;
-            this.SingleMatchOption = false;
-            this.MultiMatchOption = false;
-            this.ReplaceOption = false;
         }
 
         #endregion
@@ -362,6 +353,30 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         #endregion
 
+        #region IsBusy Property Members
+
+        public const string PropertyName_IsBusy = "IsBusy";
+
+        public static readonly DependencyProperty IsBusyProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_IsBusy, typeof(bool), typeof(PageViewModel),
+                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as PageViewModel).OnIsBusyPropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+
+        public bool IsBusy
+        {
+            get { return (bool)(this.GetValue(PageViewModel.IsBusyProperty)); }
+            set { this.SetValue(PageViewModel.IsBusyProperty, value); }
+        }
+
+        protected virtual void OnIsBusyPropertyChanged(bool oldValue, bool newValue)
+        {
+            this.EvaluateExpressionCommand.IsEnabled = !newValue;
+            this.LoadCommand.IsEnabled = !newValue;
+            this.SaveCommand.IsEnabled = !newValue;
+        }
+
+        #endregion
+
         #region EvaluateExpression Command Property Members
 
         private Events.RelayCommand _evaluateExpressionCommand = null;
@@ -377,18 +392,244 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
             }
         }
 
-        #region EnableControls Property Members
-
-        public const string PropertyName_EnableControls = "EnableControls";
-
-        public static readonly DependencyProperty EnableControlsProperty =
-            DependencyProperty.Register(PageViewModel.PropertyName_EnableControls, typeof(bool), typeof(PageViewModel),
-                new PropertyMetadata(true));
-
-        public bool EnableControls
+        protected virtual void OnEvaluateExpression(object parameter)
         {
-            get { return (bool)(this.GetValue(PageViewModel.EnableControlsProperty)); }
-            private set { this.SetValue(PageViewModel.EnableControlsProperty, value); }
+            this.IsBusy = true;
+            this.ShowMatchResultListing = false;
+            this.ShowTextResultListing = false;
+            this.ErrorMessage = "";
+            string pattern = this.Pattern;
+            bool specifyCount = this.SpecifyCount;
+            string replacementText = this.ReplacementText;
+            int countValue = this.CountValue;
+            List<Tuple<InputTextItem, Match[]>> matches = new List<Tuple<InputTextItem,Match[]>>();
+            List<Tuple<InputTextItem, string[]>> results = new List<Tuple<InputTextItem,string[]>>();
+            Regex regex = null;
+
+            Task task = Task.Factory.StartNew(() =>
+            {
+                regex = new Regex(pattern, this.Options.Value);
+                foreach (InputTextItem item in this.InputText)
+                {
+                    switch (this.EvalOperation.Value)
+                    {
+                        case DataModel.OperationType.SingleMatch:
+                            matches.Add(new Tuple<InputTextItem, Match[]>(item, new Match[] { regex.Match(item.GetText()) }));
+                            break;
+                        case DataModel.OperationType.MultiMatch:
+                            matches.Add(new Tuple<InputTextItem, Match[]>(item, regex.Matches(item.GetText()).OfType<Match>().ToArray()));
+                            break;
+                        case DataModel.OperationType.Replace:
+                            results.Add(new Tuple<InputTextItem, string[]>(item, new string[] { (specifyCount) ? regex.Replace(item.GetText(), replacementText, countValue) :
+                                regex.Replace(item.GetText(), replacementText) }));
+                            break;
+                        default:
+                            results.Add(new Tuple<InputTextItem, string[]>(item, (specifyCount) ? regex.Split(item.GetText(), countValue) : regex.Split(item.GetText())));
+                            break;
+                    }
+                }
+            });
+
+            task.Wait();
+
+            if (task.IsFaulted)
+                this.ErrorMessage = task.Exception.Message;
+            else
+            {
+                switch (this.EvalOperation.Value)
+                {
+                    case DataModel.OperationType.SingleMatch:
+                        this.ShowResults(matches, regex, false);
+                        break;
+                    case DataModel.OperationType.MultiMatch:
+                        this.ShowResults(matches, regex, true);
+                        break;
+                    case DataModel.OperationType.Replace:
+                        this.ShowResults(results, false);
+                        break;
+                    default:
+                        this.ShowResults(results, true);
+                        break;
+                }
+            }
+
+            this.IsBusy = false;
+        }
+
+        private void ShowResults(List<Tuple<InputTextItem, string[]>> results, bool displayResultCount)
+        {
+            this.ShowMatchResultListing = false;
+
+            if (results.All(r => r.Item2.Length == 0))
+            {
+                this.ErrorMessage = "No matches.";
+                return;
+            }
+
+            this.TextResults.Clear();
+            foreach (Tuple<InputTextItem, string[]> item in results)
+            {
+                this.TextResults.Add(new TextResultItem(String.Format("{0}: {1} result{2}.", item.Item1.Name, (item.Item2.Length == 0) ? "no" : item.Item2.Length.ToString(),
+                    (item.Item2.Length == 1) ? "" : "s")));
+                foreach (string s in item.Item2)
+                    this.TextResults.Add(new TextResultItem(s, true));
+            }
+
+            this.ShowTextResultListing = true;
+            this.CountResultMessage = (displayResultCount) ? String.Format("{0} items.", results.Count) : "";
+
+        }
+
+        private void ShowResults(List<Tuple<InputTextItem, Match[]>> matches, Regex regex, bool displayResultCount)
+        {
+            this.ShowTextResultListing = false;
+
+            if (matches.All(r => r.Item2.Length == 0))
+            {
+                this.ErrorMessage = "No matches.";
+                return;
+            }
+
+            this.MatchResults.Clear();
+            foreach (Tuple<InputTextItem, Match[]> item in matches)
+            {
+                this.MatchResults.Add(new MatchResultItem(String.Format("{0}: {1} result{2}.", item.Item1.Name, (item.Item2.Length == 0) ? "no" : item.Item2.Length.ToString(),
+                    (item.Item2.Length == 1) ? "" : "s")));
+                foreach (Match m in item.Item2)
+                    this.MatchResults.Add(new MatchResultItem(m, regex));
+            }
+
+            this.ShowMatchResultListing = true;
+            this.CountResultMessage = (displayResultCount) ? String.Format("{0} matches.", matches.Count) : "";
+        }
+
+        #endregion
+
+        #region NewInput Command Property Members
+
+        private Events.RelayCommand _newInputCommand = null;
+
+        public Events.RelayCommand NewInputCommand
+        {
+            get
+            {
+                if (this._newInputCommand == null)
+                    this._newInputCommand = new Events.RelayCommand(this.OnNewInput);
+
+                return this._newInputCommand;
+            }
+        }
+
+        protected virtual void OnNewInput(object parameter)
+        {
+            this.InputText.Add(new InputTextItem());
+        }
+
+        #endregion
+
+        #region Load Command Property Members
+
+        private Events.RelayCommand _loadCommand = null;
+
+        public Events.RelayCommand LoadCommand
+        {
+            get
+            {
+                if (this._loadCommand == null)
+                    this._loadCommand = new Events.RelayCommand(this.OnLoad);
+
+                return this._loadCommand;
+            }
+        }
+
+        protected virtual void OnLoad(object parameter)
+        {
+            this.IsBusy = true;
+            try
+            {
+                OpenFileDialog dialog = new OpenFileDialog();
+                dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                dialog.Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*";
+                dialog.Multiselect = false;
+                bool? result = dialog.ShowDialog();
+                if (result.HasValue && result.Value)
+                {
+                    using (FileStream stream = dialog.File.OpenRead())
+                    {
+                        DataModel.SingleInputRegexTestSettings settings = DataModel.SingleInputRegexTestSettings.Load(stream);
+                        this.Pattern = (settings.Pattern == null) ? "" : settings.Pattern;
+                        this.EvalOperation.Value =  settings.Operation;
+                        this.Options.Value = settings.Options;
+                        this.InputText.Clear();
+                        if (settings.Input != null)
+                        {
+                            foreach (DataModel.InputTextSettings input in settings.Input.Where(i => i != null))
+                                this.InputText.Add(new InputTextItem(input));
+                        }
+
+                        if (this.InputText.Count == 0)
+                            this.InputText.Add(new InputTextItem());
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                this.ErrorMessage = exc.Message;
+            }
+            finally
+            {
+                this.IsBusy = false;
+            }
+        }
+
+        #endregion
+
+        #region Save Command Property Members
+
+        private Events.RelayCommand _saveCommand = null;
+
+        public Events.RelayCommand SaveCommand
+        {
+            get
+            {
+                if (this._saveCommand == null)
+                    this._saveCommand = new Events.RelayCommand(this.OnSave);
+
+                return this._saveCommand;
+            }
+        }
+
+        protected virtual void OnSave(object parameter)
+        {
+            this.IsBusy = true;
+            try
+            {
+                SaveFileDialog dialog = new SaveFileDialog();
+                dialog.Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*";
+                bool? result = dialog.ShowDialog();
+                if (result.HasValue && result.Value)
+                {
+                    using (Stream stream = dialog.OpenFile())
+                    {
+                        DataModel.SingleInputRegexTestSettings settings = new DataModel.SingleInputRegexTestSettings
+                        {
+                            Input = this.InputText.Select(i => new DataModel.InputTextSettings(i)).ToArray(),
+                            Operation = this.EvalOperation.Value,
+                            Options = this.Options.Value,
+                            Pattern = this.Pattern
+                        };
+                        settings.Save(stream);
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                this.ErrorMessage = exc.Message;
+            }
+            finally
+            {
+                this.IsBusy = false;
+            }
         }
 
         #endregion
@@ -495,101 +736,11 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         #endregion
 
-        protected virtual void OnEvaluateExpression(object parameter)
-        {
-            this.EnableControls = false;
-            this.ShowMatchResultListing = false;
-            this.ShowTextResultListing = false;
-            this.ErrorMessage = "";
-            string pattern = this.Pattern;
-            RegexOptions options = this.Options.Value;
-            int op;
-            if (this.SingleMatchOption)
-                op = 1;
-            else if (this.MultiMatchOption)
-                op = 2;
-            else if (this.ReplaceOption)
-                op = 3;
-            else
-                op = 4;
-            string inputText = this.InputText;
-            bool specifyCount = this.SpecifyCount;
-            string replacementText = this.ReplacementText;
-            int countValue = this.CountValue;
-            Match[] matches = null;
-            string[] results = null;
-            Regex regex = null;
-            Task task = Task.Factory.StartNew(() =>
-            {
-                regex = new Regex(pattern, options);
-                switch (op)
-                {
-                    case 1:
-                        matches = new Match[] { regex.Match(inputText) };
-                        break;
-                    case 2:
-                        matches = regex.Matches(inputText).OfType<Match>().ToArray();
-                        break;
-                    case 3:
-                        results = new string[] { (specifyCount) ? regex.Replace(inputText, replacementText, countValue) :
-                            regex.Replace(inputText, replacementText) };
-                        break;
-                    default:
-                        results = (specifyCount) ? regex.Split(inputText, countValue) : regex.Split(inputText);
-                        break;
-                }
-            });
-
-            task.Wait();
-            if (task.IsFaulted)
-                this.ErrorMessage = task.Exception.Message;
-            else
-            {
-                switch (op)
-                {
-                    case 1:
-                        this.ShowResults((matches[0].Success) ? matches : new Match[0], regex, false);
-                        break;
-                    case 2:
-                        this.ShowResults(matches, regex, true);
-                        break;
-                    case 3:
-                        this.ShowResults(results, false);
-                        break;
-                    default:
-                        this.ShowResults(results, true);
-                        break;
-                }
-            }
-            this.EnableControls = true;
-        }
-
-        private void ShowResults(string[] results, bool displayResultCount)
-        {
-            this.TextResults.Clear();
-            foreach (string s in results)
-                this.TextResults.Add(new TextResultItem(s));
-
-            this.ShowTextResultListing = true;
-            this.CountResultMessage = (displayResultCount) ? String.Format("{0} items.", results.Length) : "";
-        }
-
-        private void ShowResults(Match[] matches, Regex regex, bool displayResultCount)
-        {
-            this.MatchResults.Clear();
-            foreach (Match m in matches)
-                this.MatchResults.Add(new MatchResultItem(m, regex));
-
-            this.ShowMatchResultListing = true;
-            this.CountResultMessage = (displayResultCount) ? String.Format("{0} matches.", matches.Length) : "";
-        }
-
-        #endregion
-
         public PageViewModel()
             : base()
         {
             this.Options = new RegexOptionsViewModel();
+            this.EvalOperation = new OperationSettingsViewModel();
             this.TextResults = new ObservableCollection<TextResultItem>();
             this.MatchResults = new ObservableCollection<MatchResultItem>();
         }

@@ -7,6 +7,38 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 {
     public class MatchResultItem : BaseGroupItem
     {
+        #region IsMessage Property Members
+
+        public const string PropertyName_IsMessage = "IsMessage";
+
+        public static readonly DependencyProperty IsMessageProperty =
+            DependencyProperty.Register(MatchResultItem.PropertyName_IsMessage, typeof(bool), typeof(MatchResultItem),
+                new PropertyMetadata(false));
+
+        public bool IsMessage
+        {
+            get { return (bool)(this.GetValue(MatchResultItem.IsMessageProperty)); }
+            set { this.SetValue(MatchResultItem.IsMessageProperty, value); }
+        }
+
+        #endregion
+
+        #region Message Property Members
+
+        public const string PropertyName_Message = "Message";
+
+        public static readonly DependencyProperty MessageProperty =
+            DependencyProperty.Register(MatchResultItem.PropertyName_Message, typeof(string), typeof(MatchResultItem),
+                new PropertyMetadata(""));
+
+        public string Message
+        {
+            get { return this.GetValue(MatchResultItem.MessageProperty) as string; }
+            set { this.SetValue(MatchResultItem.MessageProperty, value); }
+        }
+
+        #endregion
+
         #region Groups Property Members
 
         public const string PropertyName_Groups = "Groups";
@@ -164,6 +196,7 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
         public static readonly DependencyProperty ShowEmptyGroupsProperty =
             DependencyProperty.Register(MatchResultItem.PropertyName_ShowEmptyGroups, typeof(bool), typeof(MatchResultItem),
                 new PropertyMetadata(false));
+        private string p;
 
         public bool ShowEmptyGroups
         {
@@ -182,10 +215,17 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
         public MatchResultItem(Match match, Regex regex)
             : base(match)
         {
+            this.IsMessage = false;
             this.Groups = new ObservableCollection<GroupResultItem>();
             for (int i = 0; i < match.Groups.Count; i++)
                 this.Groups.Add(new GroupResultItem(match.Groups[i], i, regex.GroupNameFromNumber(i)));
             this.ShowEmptyGroups = this.Groups.Count == 0 && this.ShowGroups;
+        }
+
+        public MatchResultItem(string message)
+        {
+            this.IsMessage = true;
+            this.Message = message;
         }
     }
 }

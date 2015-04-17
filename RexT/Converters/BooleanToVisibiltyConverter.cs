@@ -6,7 +6,6 @@ namespace Erwine.Leonard.T.RexT.Converters
 {
     public class BooleanToVisibiltyConverter : DependencyObject, IValueConverter
     {
-
         #region TrueValue Property Members
 
         public const string PropertyName_TrueValue = "TrueValue";

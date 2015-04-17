@@ -10,4 +10,7 @@
     <Converters:CollectionToVisibilityConverter x:Key="CollectionToVisibilityConverter" />
     <Converters:CollectionToVisibilityConverter x:Key="InverseCollectionToVisibilityConverter" EmptyValue="Visible" NonEmptyValue="Collapsed" NullValue="Visible" />
     <Converters:CollectionToTextConverter x:Key="CollectionToCountOrNoConverter" EmptyValue="No" />
+    <Converters:BooleanToTextWrappingConverter x:Key="BooleanToTextWrappingConverter" />
+    <Converters:BooleanToScrollBarVisibilityConverter x:Key="BooleanToScrollBarVisibilityConverter" />
+    <Converters:BooleanToScrollBarVisibilityConverter x:Key="InverseBooleanToScrollBarVisibilityConverter" TrueValue="Hidden" FalseValue="Auto" />
 </ResourceDictionary>

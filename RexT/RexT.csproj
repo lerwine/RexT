@@ -84,24 +84,40 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\BooleanToScrollBarVisibilityConverter.cs" />
     <Compile Include="Converters\BooleanToTextConverter.cs" />
+    <Compile Include="Converters\BooleanToTextWrappingConverter.cs" />
     <Compile Include="Converters\BooleanToVisibiltyConverter.cs" />
     <Compile Include="Converters\CollectionToTextConverter.cs" />
     <Compile Include="Converters\CollectionToVisibilityConverter.cs" />
     <Compile Include="Converters\InverseBooleanConverter.cs" />
+    <Compile Include="DataModel\InputTextSettings.cs" />
+    <Compile Include="DataModel\OperationType.cs" />
+    <Compile Include="DataModel\SerializableDataModel.cs" />
+    <Compile Include="DataModel\SingleInputRegexTestSettings.cs" />
     <Compile Include="Events\RelayCommand.cs" />
     <Compile Include="RegexPatterns.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>RegexPatterns.resx</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\Builder\CharacterNode.cs" />
+    <Compile Include="ViewModel\Builder\ContainerNode.cs" />
+    <Compile Include="ViewModel\Builder\GroupingNode.cs" />
+    <Compile Include="ViewModel\Builder\RegexNode.cs" />
+    <Compile Include="ViewModel\Builder\RegexNodeType.cs" />
+    <Compile Include="ViewModel\Builder\RootNode.cs" />
     <Compile Include="ViewModel\Home\BaseGroupItem.cs" />
     <Compile Include="ViewModel\Home\CaptureResultItem.cs" />
     <Compile Include="ViewModel\Home\GroupResultItem.cs" />
+    <Compile Include="ViewModel\Home\InputTextItem.cs" />
     <Compile Include="ViewModel\Home\MatchResultItem.cs" />
     <Compile Include="ViewModel\Home\PageViewModel.cs" />
+    <Compile Include="DataModel\TextInputEncodingValue.cs" />
     <Compile Include="ViewModel\Home\TextResultItem.cs" />
-    <Compile Include="ViewModel\RegexOptionItem.cs" />
+    <Compile Include="ViewModel\OperationSettingsValueEventArgs.cs" />
+    <Compile Include="ViewModel\OperationSettingsViewModel.cs" />
+    <Compile Include="ViewModel\RegexOptionsValueEventArgs.cs" />
     <Compile Include="ViewModel\RegexOptionsViewModel.cs" />
     <Compile Include="Views\ErrorWindow.xaml.cs">
       <DependentUpon>ErrorWindow.xaml</DependentUpon>
@@ -122,9 +138,16 @@
     <Compile Include="Views\MatchDetailsControl.xaml.cs">
       <DependentUpon>MatchDetailsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\NestableNodeControl.xaml.cs">
+      <DependentUpon>NestableNodeControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PatternTest.xaml.cs">
+      <DependentUpon>PatternTest.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\RegecOptionsControl.xaml.cs">
       <DependentUpon>RegecOptionsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ResultsDataContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -136,6 +159,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MatchDetailsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NestableNodeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PatternTest.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -170,6 +201,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AppManifest.xml" />
+    <None Include="ViewModel\Builder\ClassDiagram1.cd" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="RegexPatterns.resx">

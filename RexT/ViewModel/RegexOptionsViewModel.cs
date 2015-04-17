@@ -1,68 +1,83 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows;
 
 namespace Erwine.Leonard.T.RexT.ViewModel
 {
-    public class RegexOptionsViewModel : ReadOnlyObservableCollection<RegexOptionItem>
+    public class RegexOptionsViewModel : DependencyObject
     {
-        public event EventHandler ValueChanged;
+        public event EventHandler<RegexOptionsValueEventArgs> ValueChanged;
 
-        private RegexOptions _value = RegexOptions.None;
+        private bool _ignoreEvent = false;
+
+        #region Value Property Members
+
+        public const string PropertyName_Value = "Value";
+
+        public static readonly DependencyProperty ValueProperty =
+            DependencyProperty.Register(RegexOptionsViewModel.PropertyName_Value, typeof(RegexOptions), typeof(RegexOptionsViewModel),
+                new PropertyMetadata(RegexOptions.None, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as RegexOptionsViewModel).OnValuePropertyChanged((RegexOptions)(e.OldValue), (RegexOptions)(e.NewValue))));
 
         public RegexOptions Value
         {
-            get { return this._value; }
-            set
-            {
-                RegexOptions oldValue = this._value;
-                if (oldValue == value)
-                    return;
-
-                this._value = value;
-
-                this.OnValueChanged(oldValue, value);
-
-                this.DisplayText = (value == RegexOptions.None) ? "None" : String.Join(", ", this.Select(i => i.DisplayText).ToArray());
-
-                this.OnPropertyChanged(new PropertyChangedEventArgs("Value"));
-                this.OnPropertyChanged(new PropertyChangedEventArgs("DisplayText"));
-            }
+            get { return (RegexOptions)(this.GetValue(RegexOptionsViewModel.ValueProperty)); }
+            set { this.SetValue(RegexOptionsViewModel.ValueProperty, value); }
         }
 
-        public string DisplayText { get; private set; }
-
-        public RegexOptionsViewModel()
-            : base(new ObservableCollection<RegexOptionItem>(Enum.GetValues(typeof(RegexOptions)).OfType<RegexOptions>().Where(o => o != RegexOptions.None).Select(o => new RegexOptionItem(o))))
+        protected virtual void OnValuePropertyChanged(RegexOptions oldValue, RegexOptions newValue)
         {
-            foreach (RegexOptionItem item in this)
-                item.SelectedChanged += this.Item_SelectedChanged;
-
-            this.OnValueChanged(RegexOptions.None, this.Value);
-        }
-
-        private bool _ignoreSelectedChanged = false;
-
-        private void OnValueChanged(RegexOptions oldValue, RegexOptions newValue)
-        {
-            if (this._ignoreSelectedChanged)
+            if (this._ignoreEvent)
                 return;
 
-            this._ignoreSelectedChanged = true;
+            if (newValue == RegexOptions.None)
+            {
+                this.None = true;
+                if (this.ValueChanged != null)
+                    this.ValueChanged(this, new RegexOptionsValueEventArgs(newValue));
+                return;
+            }
+
+            this._ignoreEvent = true;
             try
             {
-                if (newValue == RegexOptions.None)
+                this.None = false;
+                if (newValue.HasFlag(RegexOptions.ECMAScript))
                 {
-                    foreach (RegexOptionItem item in this.Where(i => i.IsSelected))
-                        item.IsSelected = false;
+                    RegexOptions value = RegexOptions.ECMAScript;
+                    this.ECMAScript = true;
+                    if (newValue.HasFlag(RegexOptions.IgnoreCase))
+                    {
+                        this.IgnoreCase = true;
+                        value |= RegexOptions.IgnoreCase;
+                    }
+                    else
+                        this.IgnoreCase = false;
+                    if (newValue.HasFlag(RegexOptions.Multiline))
+                    {
+                        this.Multiline = true;
+                        value |= RegexOptions.Multiline;
+                    }
+                    else
+                        this.Multiline = false;
+
+                    if (newValue != value)
+                        this.Value = value;
                 }
                 else
                 {
-                    foreach (RegexOptionItem item in this.Where(i => i.IsSelected))
-                        item.IsSelected = this.Value.HasFlag(item.Value);
+                    this.ECMAScript = false;
+                    this.CultureInvariant = newValue.HasFlag(RegexOptions.CultureInvariant);
+                    this.ExplicitCapture = newValue.HasFlag(RegexOptions.ExplicitCapture);
+                    this.IgnoreCase = newValue.HasFlag(RegexOptions.IgnoreCase);
+                    this.IgnorePatternWhitespace = newValue.HasFlag(RegexOptions.IgnorePatternWhitespace);
+                    this.Multiline = newValue.HasFlag(RegexOptions.Multiline);
+                    this.RightToLeft = newValue.HasFlag(RegexOptions.RightToLeft);
+                    this.Singleline = newValue.HasFlag(RegexOptions.Singleline);
                 }
+
+                if (this.ValueChanged != null)
+                    this.ValueChanged(this, new RegexOptionsValueEventArgs(newValue));
             }
             catch
             {
@@ -70,34 +85,296 @@ namespace Erwine.Leonard.T.RexT.ViewModel
             }
             finally
             {
-                this._ignoreSelectedChanged = false;
+                this._ignoreEvent = false;
             }
-
-            if (this.ValueChanged != null)
-                this.ValueChanged(this, EventArgs.Empty);
         }
 
-        private void Item_SelectedChanged(object sender, EventArgs e)
+        private void UpdateValue()
         {
-            if (this._ignoreSelectedChanged)
+            RegexOptions value = RegexOptions.None;
+            if (this.None)
+            {
+                this.Value = value;
+                return;
+            }
+
+            if (this.IgnoreCase)
+                value |= RegexOptions.IgnoreCase;
+            if (this.Multiline)
+                value |= RegexOptions.Multiline;
+            if (this.ECMAScript)
+            {
+                value |= RegexOptions.ECMAScript;
+                this.Value = value;
+                return;
+            }
+
+            if (this.CultureInvariant)
+                value |= RegexOptions.CultureInvariant;
+            if (this.ExplicitCapture)
+                value |= RegexOptions.ExplicitCapture;
+            if (this.IgnorePatternWhitespace)
+                value |= RegexOptions.IgnorePatternWhitespace;
+            if (this.RightToLeft)
+                value |= RegexOptions.RightToLeft;
+            if (this.Singleline)
+                value |= RegexOptions.Singleline;
+            this.Value = value;
+        }
+
+        #endregion
+
+        public RegexOptionsViewModel() : base() { }
+
+        #region None Property Members
+
+        public const string PropertyName_None = "None";
+
+        public static readonly DependencyProperty NoneProperty =
+            DependencyProperty.Register(RegexOptionsViewModel.PropertyName_None, typeof(bool), typeof(RegexOptionsViewModel),
+                new PropertyMetadata(true, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as RegexOptionsViewModel).OnNonePropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+
+        public bool None
+        {
+            get { return (bool)(this.GetValue(RegexOptionsViewModel.NoneProperty)); }
+            set { this.SetValue(RegexOptionsViewModel.NoneProperty, value); }
+        }
+
+        protected virtual void OnNonePropertyChanged(bool oldValue, bool newValue)
+        {
+            if (!newValue || this._ignoreEvent)
                 return;
 
-            this._ignoreSelectedChanged = true;
-            try
-            {
-                this.Value = this.Where(i => i.IsSelected).Aggregate<RegexOptionItem, RegexOptions>(RegexOptions.None, (RegexOptions x, RegexOptionItem y) => x | y.Value);
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                this._ignoreSelectedChanged = false;
-            }
-
-            if (this.ValueChanged != null)
-                this.ValueChanged(this, EventArgs.Empty);
+            this.CultureInvariant = false;
+            this.ECMAScript = false;
+            this.ExplicitCapture = false;
+            this.IgnoreCase = false;
+            this.IgnorePatternWhitespace = false;
+            this.Multiline = false;
+            this.RightToLeft = false;
+            this.Singleline = false;
+            this.UpdateValue();
         }
+
+        #endregion
+
+        #region IgnoreCase Property Members
+
+        public const string PropertyName_IgnoreCase = "IgnoreCase";
+
+        public static readonly DependencyProperty IgnoreCaseProperty =
+            DependencyProperty.Register(RegexOptionsViewModel.PropertyName_IgnoreCase, typeof(bool), typeof(RegexOptionsViewModel),
+                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as RegexOptionsViewModel).OnIgnoreCasePropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+
+        public bool IgnoreCase
+        {
+            get { return (bool)(this.GetValue(RegexOptionsViewModel.IgnoreCaseProperty)); }
+            set { this.SetValue(RegexOptionsViewModel.IgnoreCaseProperty, value); }
+        }
+
+        protected virtual void OnIgnoreCasePropertyChanged(bool oldValue, bool newValue)
+        {
+            if (!newValue || this._ignoreEvent)
+                return;
+
+            this.None = false;
+            this.UpdateValue();
+        }
+
+        #endregion
+
+        #region Multiline Property Members
+
+        public const string PropertyName_Multiline = "Multiline";
+
+        public static readonly DependencyProperty MultilineProperty =
+            DependencyProperty.Register(RegexOptionsViewModel.PropertyName_Multiline, typeof(bool), typeof(RegexOptionsViewModel),
+                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as RegexOptionsViewModel).OnMultilinePropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+
+        public bool Multiline
+        {
+            get { return (bool)(this.GetValue(RegexOptionsViewModel.MultilineProperty)); }
+            set { this.SetValue(RegexOptionsViewModel.MultilineProperty, value); }
+        }
+
+        protected virtual void OnMultilinePropertyChanged(bool oldValue, bool newValue)
+        {
+            if (!newValue || this._ignoreEvent)
+                return;
+
+            this.None = false;
+            this.UpdateValue();
+        }
+
+        #endregion
+
+        #region ExplicitCapture Property Members
+
+        public const string PropertyName_ExplicitCapture = "ExplicitCapture";
+
+        public static readonly DependencyProperty ExplicitCaptureProperty =
+            DependencyProperty.Register(RegexOptionsViewModel.PropertyName_ExplicitCapture, typeof(bool), typeof(RegexOptionsViewModel),
+                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as RegexOptionsViewModel).OnExplicitCapturePropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+
+        public bool ExplicitCapture
+        {
+            get { return (bool)(this.GetValue(RegexOptionsViewModel.ExplicitCaptureProperty)); }
+            set { this.SetValue(RegexOptionsViewModel.ExplicitCaptureProperty, value); }
+        }
+
+        protected virtual void OnExplicitCapturePropertyChanged(bool oldValue, bool newValue)
+        {
+            if (!newValue || this._ignoreEvent)
+                return;
+
+            this.None = false;
+            this.ECMAScript = false;
+            this.UpdateValue();
+        }
+
+        #endregion
+
+        #region Singleline Property Members
+
+        public const string PropertyName_Singleline = "Singleline";
+
+        public static readonly DependencyProperty SinglelineProperty =
+            DependencyProperty.Register(RegexOptionsViewModel.PropertyName_Singleline, typeof(bool), typeof(RegexOptionsViewModel),
+                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as RegexOptionsViewModel).OnSinglelinePropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+
+        public bool Singleline
+        {
+            get { return (bool)(this.GetValue(RegexOptionsViewModel.SinglelineProperty)); }
+            set { this.SetValue(RegexOptionsViewModel.SinglelineProperty, value); }
+        }
+
+        protected virtual void OnSinglelinePropertyChanged(bool oldValue, bool newValue)
+        {
+            if (!newValue || this._ignoreEvent)
+                return;
+
+            this.None = false;
+            this.ECMAScript = false;
+            this.UpdateValue();
+        }
+
+        #endregion
+
+        #region IgnorePatternWhitespace Property Members
+
+        public const string PropertyName_IgnorePatternWhitespace = "IgnorePatternWhitespace";
+
+        public static readonly DependencyProperty IgnorePatternWhitespaceProperty =
+            DependencyProperty.Register(RegexOptionsViewModel.PropertyName_IgnorePatternWhitespace, typeof(bool), typeof(RegexOptionsViewModel),
+                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as RegexOptionsViewModel).OnIgnorePatternWhitespacePropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+
+        public bool IgnorePatternWhitespace
+        {
+            get { return (bool)(this.GetValue(RegexOptionsViewModel.IgnorePatternWhitespaceProperty)); }
+            set { this.SetValue(RegexOptionsViewModel.IgnorePatternWhitespaceProperty, value); }
+        }
+
+        protected virtual void OnIgnorePatternWhitespacePropertyChanged(bool oldValue, bool newValue)
+        {
+            if (!newValue || this._ignoreEvent)
+                return;
+
+            this.None = false;
+            this.ECMAScript = false;
+            this.UpdateValue();
+        }
+
+        #endregion
+
+        #region RightToLeft Property Members
+
+        public const string PropertyName_RightToLeft = "RightToLeft";
+
+        public static readonly DependencyProperty RightToLeftProperty =
+            DependencyProperty.Register(RegexOptionsViewModel.PropertyName_RightToLeft, typeof(bool), typeof(RegexOptionsViewModel),
+                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as RegexOptionsViewModel).OnRightToLeftPropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+
+        public bool RightToLeft
+        {
+            get { return (bool)(this.GetValue(RegexOptionsViewModel.RightToLeftProperty)); }
+            set { this.SetValue(RegexOptionsViewModel.RightToLeftProperty, value); }
+        }
+
+        protected virtual void OnRightToLeftPropertyChanged(bool oldValue, bool newValue)
+        {
+            if (!newValue || this._ignoreEvent)
+                return;
+
+            this.None = false;
+            this.ECMAScript = false;
+            this.UpdateValue();
+        }
+
+        #endregion
+
+        #region ECMAScript Property Members
+
+        public const string PropertyName_ECMAScript = "ECMAScript";
+
+        public static readonly DependencyProperty ECMAScriptProperty =
+            DependencyProperty.Register(RegexOptionsViewModel.PropertyName_ECMAScript, typeof(bool), typeof(RegexOptionsViewModel),
+                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as RegexOptionsViewModel).OnECMAScriptPropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+
+        public bool ECMAScript
+        {
+            get { return (bool)(this.GetValue(RegexOptionsViewModel.ECMAScriptProperty)); }
+            set { this.SetValue(RegexOptionsViewModel.ECMAScriptProperty, value); }
+        }
+
+        protected virtual void OnECMAScriptPropertyChanged(bool oldValue, bool newValue)
+        {
+            if (!newValue || this._ignoreEvent)
+                return;
+
+            this.CultureInvariant = false;
+            this.ExplicitCapture = false;
+            this.IgnorePatternWhitespace = false;
+            this.None = false;
+            this.RightToLeft = false;
+            this.Singleline = false;
+            this.UpdateValue();
+        }
+
+        #endregion
+
+        #region CultureInvariant Property Members
+
+        public const string PropertyName_CultureInvariant = "CultureInvariant";
+
+        public static readonly DependencyProperty CultureInvariantProperty =
+            DependencyProperty.Register(RegexOptionsViewModel.PropertyName_CultureInvariant, typeof(bool), typeof(RegexOptionsViewModel),
+                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as RegexOptionsViewModel).OnCultureInvariantPropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+
+        public bool CultureInvariant
+        {
+            get { return (bool)(this.GetValue(RegexOptionsViewModel.CultureInvariantProperty)); }
+            set { this.SetValue(RegexOptionsViewModel.CultureInvariantProperty, value); }
+        }
+
+        protected virtual void OnCultureInvariantPropertyChanged(bool oldValue, bool newValue)
+        {
+            if (!newValue || this._ignoreEvent)
+                return;
+
+            this.ECMAScript = false;
+            this.None = false;
+            this.UpdateValue();
+        }
+
+        #endregion
     }
 }
