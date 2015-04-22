@@ -17,75 +17,102 @@
     </sdk:Page.DataContext>
     <Grid x:Name="LayoutRoot">
         <Grid.RowDefinitions>
-            <RowDefinition Height="40*"/>
-            <RowDefinition Height="60*"/>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <sdk:GridSplitter Height="10" Grid.Row="1" VerticalAlignment="Top" Cursor="SizeNS" HorizontalAlignment="Stretch"/>
-        <sdk:TabControl>
-            <sdk:TabItem Header="Options">
+        <sdk:TabControl TabStripPlacement="Left">
+            <sdk:TabItem Header="Options" IsSelected="{Binding Path=OptionsTabSelected, Mode=TwoWay}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <ItemsControl ItemsSource="{Binding Options}" ScrollViewer.HorizontalScrollBarVisibility="Auto" Grid.ColumnSpan="4" VerticalAlignment="Top">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border BorderThickness="1" CornerRadius="2" BorderBrush="{StaticResource BodyTextColorBrush}" Padding="2">
-                                        <StackPanel>
-                                            <TextBlock Text="{Binding DisplayText, Mode=OneWay}" VerticalAlignment="Bottom" HorizontalAlignment="Left" TextWrapping="Wrap" />
-                                            <CheckBox VerticalAlignment="Top" HorizontalAlignment="Left" IsChecked="{Binding IsSelected, Mode=TwoWay}" />
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                        <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="Operation:" Grid.ColumnSpan="4" VerticalAlignment="Bottom" FontWeight="Bold"/>
-                        <RadioButton Content="Single Match" Grid.Row="2" IsChecked="{Binding SingleMatchOption, Mode=TwoWay}" VerticalAlignment="Top"/>
-                        <RadioButton Content="Multiple Match" Grid.Column="1" Grid.Row="2" IsChecked="{Binding MultiMatchOption, Mode=TwoWay}" VerticalAlignment="Top"/>
-                        <RadioButton Content="Split" Grid.Column="2" Grid.Row="2" IsChecked="{Binding SplitOption, Mode=TwoWay}" VerticalAlignment="Top"/>
-                        <RadioButton Content="Replace" Grid.Column="3" Grid.Row="2" IsChecked="{Binding ReplaceOption, Mode=TwoWay}" VerticalAlignment="Top"/>
-                        <CheckBox Content="Limit Count" Grid.Row="3" IsChecked="{Binding SpecifyCount, Mode=TwoWay}" Visibility="{Binding ShowCountOption, Converter={StaticResource BooleanToVisibiltyConverter}}" VerticalAlignment="Bottom"/>
-                        <TextBox Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="3" TextWrapping="Wrap" Text="{Binding CountValue, Mode=TwoWay}" IsEnabled="{Binding SpecifyCount}" Visibility="{Binding ShowCountOption, Converter={StaticResource BooleanToVisibiltyConverter}}" VerticalAlignment="Bottom"/>
-                        <TextBox Grid.ColumnSpan="4" Grid.Row="5" TextWrapping="Wrap" Text="{Binding InputText, Mode=TwoWay}" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" VerticalAlignment="Top"/>
+                        <TextBlock Text="Operation:" VerticalAlignment="Bottom" Style="{StaticResource TopDetailHheadingTextBlockStyle}"/>
+                        <Grid Grid.Row="1" DataContext="{Binding EvalOperation, Mode=OneWay}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <RadioButton Content="Single Match" IsChecked="{Binding SingleMatch, Mode=TwoWay}" VerticalAlignment="Top"/>
+                            <RadioButton Content="Multiple Match" Grid.Column="1" IsChecked="{Binding MultiMatch, Mode=TwoWay}" VerticalAlignment="Top" Margin="8,0,0,0"/>
+                            <RadioButton Content="Split" Grid.Column="2" IsChecked="{Binding Split, Mode=TwoWay}" VerticalAlignment="Top" Margin="8,0,0,0"/>
+                            <RadioButton Content="Replace" Grid.Column="3" IsChecked="{Binding Replace, Mode=TwoWay}" VerticalAlignment="Top" Margin="8,0,0,0"/>
+                        </Grid>
+                        <Grid Grid.Row="2" Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Content="Limit Count" IsChecked="{Binding SpecifyCount, Mode=TwoWay}" Visibility="{Binding ShowCountOption, Converter={StaticResource BooleanToVisibiltyConverter}}" VerticalAlignment="Bottom"/>
+                            <TextBox Grid.Column="1" TextWrapping="Wrap" Margin="8,0,0,0" Text="{Binding CountValue, Mode=TwoWay}" IsEnabled="{Binding SpecifyCount}" Visibility="{Binding ShowCountOption, Converter={StaticResource BooleanToVisibiltyConverter}}" VerticalAlignment="Bottom"/>
+                        </Grid>
+                        <TextBlock Grid.Row="3" Text="Expression Options:" VerticalAlignment="Bottom" Style="{StaticResource DetailHheadingTextBlockStyle}" />
+                        <Grid Grid.Row="4" DataContext="{Binding Options}" Margin="0,0,0,4">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Content="None" IsChecked="{Binding None, Mode=TwoWay}" VerticalAlignment="Top"/>
+                            <CheckBox Grid.Column="2" Grid.ColumnSpan="2" Content="ECMAScript-compliant" Margin="8,0,0,0" IsChecked="{Binding Path=ECMAScript, Mode=TwoWay}" VerticalAlignment="Top" />
+
+                            <CheckBox Grid.Row="1" Content="Ignore Case" IsChecked="{Binding Path=IgnoreCase, Mode=TwoWay}" VerticalAlignment="Top" Margin="0,4" />
+                            <CheckBox Grid.Row="1" Grid.Column="1" Content="Multi-line" Margin="8,4,0,4" IsChecked="{Binding Path=Multiline, Mode=TwoWay}" VerticalAlignment="Top" />
+                            <CheckBox Grid.Row="1" Grid.Column="2" Content="Single Line" Margin="8,4,0,4" IsChecked="{Binding Path=Singleline, Mode=TwoWay}" VerticalAlignment="Top" IsEnabled="{Binding Path=ECMAScript, Converter={StaticResource InverseBooleanConverter}}" />
+                            <CheckBox Grid.Row="1" Grid.Column="3" Content="Ignore Pattern Whitespace" Margin="8,4,0,4" IsChecked="{Binding Path=IgnorePatternWhitespace, Mode=TwoWay}" VerticalAlignment="Top" IsEnabled="{Binding Path=ECMAScript, Converter={StaticResource InverseBooleanConverter}}" />
+
+                            <CheckBox Grid.Row="2" Content="Explicit Capture" IsChecked="{Binding Path=ExplicitCapture, Mode=TwoWay}" VerticalAlignment="Top" IsEnabled="{Binding Path=ECMAScript, Converter={StaticResource InverseBooleanConverter}}" />
+                            <CheckBox Grid.Row="2" Grid.Column="1" Content="Culture-invariant" Margin="8,0,0,0" IsChecked="{Binding Path=CultureInvariant, Mode=TwoWay}" VerticalAlignment="Top" IsEnabled="{Binding Path=ECMAScript, Converter={StaticResource InverseBooleanConverter}}" />
+                            <CheckBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Content="Right-to-left" Margin="8,0,0,0" IsChecked="{Binding Path=RightToLeft, Mode=TwoWay}" VerticalAlignment="Top" IsEnabled="{Binding Path=ECMAScript, Converter={StaticResource InverseBooleanConverter}}" />
+                        </Grid>
                     </Grid>
                 </ScrollViewer>
             </sdk:TabItem>
-            <sdk:TabItem Header="Pattern">
-                <TextBox TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
-            </sdk:TabItem>
-            <sdk:TabItem Header="Input">
+            <sdk:TabItem Header="Pattern" IsSelected="{Binding Path=PatternTabSelected, Mode=TwoWay}">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Regular Expression Pattern" Style="{StaticResource TopDetailHheadingTextBlockStyle}" />
+                    <TextBlock Grid.Row="1" Text="Enter regular expression pattern text below." Margin="0,0,0,4" />
+                    <TextBox Grid.Row="2" Text="{Binding Pattern, Mode=TwoWay}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
+                </Grid>
+            </sdk:TabItem>
+            <sdk:TabItem Header="Input" IsSelected="{Binding Path=InputTabSelected, Mode=TwoWay}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <sdk:DataGrid AutoGenerateColumns="False" SelectionMode="Single" ItemsSource="{Binding InputText}">
+                    <TextBlock Text="Input Text" Style="{StaticResource TopDetailHheadingTextBlockStyle}" />
+                    <TextBlock Grid.Row="1" Text="Enter one or more text strings to be evaluated." />
+                    <sdk:DataGrid Grid.Row="2" AutoGenerateColumns="False" SelectionMode="Single" ItemsSource="{Binding InputText}" SelectedIndex="{Binding Path=SelectedInput, Mode=TwoWay}" Margin="0,4">
                         <sdk:DataGrid.Columns>
-                            <sdk:DataGridTextColumn Binding="{Binding Name}" Header="Name" Width="*" />
-                            <sdk:DataGridCheckBoxColumn Binding="{Binding AlwaysEvaluate}" Header="Always Evaluate" Width="Auto" />
+                            <sdk:DataGridTextColumn Binding="{Binding Name, Mode=TwoWay}" Header="Name" Width="*" CanUserSort="False" />
+                            <sdk:DataGridCheckBoxColumn Binding="{Binding AlwaysEvaluate, Mode=TwoWay}" Header="Always Evaluate" Width="Auto" CanUserSort="False" />
                         </sdk:DataGrid.Columns>
                         <sdk:DataGrid.RowDetailsTemplate>
                             <DataTemplate>
-                                <Grid>
+                                <Grid Margin="32,0,0,0">
                                     <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition />
                                         <RowDefinition Height="Auto" />
@@ -98,72 +125,61 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <CheckBox Content="MultiLine" IsChecked="{Binding IsMultiline}"/>
-                                    <CheckBox Content="Word Wrap" IsChecked="{Binding WordWrap}" />
+                                    <CheckBox Content="MultiLine" IsChecked="{Binding IsMultiline, Mode=TwoWay}"/>
                                     <TextBlock Grid.Column="1" Text="Input Encoding:" HorizontalAlignment="Right" />
-                                    <RadioButton Grid.Column="2"  Content="Unicode" IsChecked="{Binding TextInputEncodingUnicode}" />
-                                    <RadioButton Grid.Column="3"  Content="UTF-8" IsChecked="{Binding TextInputEncodingUtf8}" />
-                                    <RadioButton Grid.Column="4"  Content="HTML" IsChecked="{Binding TextInputEncodingHtml}" />
-                                    <RadioButton Grid.Column="5"  Content="URI-Encoded" IsChecked="{Binding TextInputEncodingUri}" />
-                                    <TextBox Grid.Row="1" Grid.ColumnSpan="6" AcceptsReturn="{Binding IsMultiline}"
+                                    <RadioButton Grid.Column="2" Content="Unicode" IsChecked="{Binding TextInputEncodingUnicode, Mode=TwoWay}" Margin="8,0,0,0" />
+                                    <RadioButton Grid.Column="3" Content="UTF-8" IsChecked="{Binding TextInputEncodingUtf8, Mode=TwoWay}" Margin="8,0,0,0" />
+                                    <RadioButton Grid.Column="4"  Content="HTML" IsChecked="{Binding TextInputEncodingHtml, Mode=TwoWay}" Margin="8,0,0,0" />
+                                    <RadioButton Grid.Column="5"  Content="URI-Encoded" IsChecked="{Binding TextInputEncodingUri, Mode=TwoWay}" Margin="8,0,0,0" />
+                                    <TextBox Grid.Row="2" Text="{Binding Path=Text, Mode=TwoWay}" Grid.ColumnSpan="6" AcceptsReturn="{Binding IsMultiline, Mode=OneWay}"
                                              TextWrapping="{Binding WordWrap, Converter={StaticResource BooleanToTextWrappingConverter}, Mode=OneWay}"
-                                             VerticalAlignment="Top" VerticalScrollBarVisibility="Auto"
-                                             HorizontalScrollBarVisibility="{Binding WordWrap, Converter={StaticResource InverseBooleanToScrollBarVisibilityConverter}, Mode=OneWay}" />
-                                    <Button Content="Delete" Grid.Row="2" Grid.ColumnSpan="6" HorizontalAlignment="Right" Command="{Binding DeleteCommand, Mode=OneWay}" 
-                                            Width="75" Height="23" />
+                                             VerticalAlignment="Top" />
+                                    <CheckBox Grid.Row="1" Grid.ColumnSpan="6" Content="Word Wrap" IsChecked="{Binding WordWrap, Mode=TwoWay}" Margin="0,4" />
+                                    <Button Content="Delete" Grid.Row="3" Grid.ColumnSpan="6" HorizontalAlignment="Right" Command="{Binding DeleteCommand, Mode=OneWay}" 
+                                            Width="75" Height="23" Margin="0,4,0,0" />
                                 </Grid>
                             </DataTemplate>
                         </sdk:DataGrid.RowDetailsTemplate>
                     </sdk:DataGrid>
-                    <Button Grid.Row="1" Content="Add New" HorizontalAlignment="Right" Width="75" Height="23" Command="{Binding NewInputCommand, Mode=OneWay}" />
+                    <Button Grid.Row="3" Content="Add New" HorizontalAlignment="Right" Width="75" Height="23" Command="{Binding NewInputCommand, Mode=OneWay}" />
+                </Grid>
+            </sdk:TabItem>
+            <sdk:TabItem Header="Results" IsSelected="{Binding Path=ResultsTabSelected, Mode=TwoWay}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <sdk:DataGrid IsReadOnly="True" SelectedIndex="{Binding Path=SelectedResult, Mode=TwoWay}" SelectionMode="Single" ItemsSource="{Binding Path=Results}" AutoGenerateColumns="False" VerticalAlignment="Top" 
+                          Visibility="{Binding ShowMatchResultListing, Converter={StaticResource BooleanToVisibiltyConverter}, Mode=OneWay}">
+                        <sdk:DataGrid.Columns>
+                            <sdk:DataGridTextColumn Binding="{Binding Input.Name}" Header="Name" IsReadOnly="True" Width="*" />
+                            <sdk:DataGridTextColumn Binding="{Binding Results.Count}" Header="Count" IsReadOnly="True" Width="Auto" />
+                        </sdk:DataGrid.Columns>
+                        <sdk:DataGrid.RowDetailsTemplate>
+                            <DataTemplate>
+                                <Views:ResultItemControl Margin="32,0,0,0" />
+                            </DataTemplate>
+                        </sdk:DataGrid.RowDetailsTemplate>
+                    </sdk:DataGrid>
+                    <Border Grid.Row="1" BorderThickness="2" CornerRadius="8" Margin="0,8,0,0" Padding="8" BorderBrush="{StaticResource BodyTextColorBrush}" 
+                    Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibiltyConverter}, Mode=OneWay}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <TextBlock TextWrapping="Wrap" Text="{Binding ErrorMessage, Mode=OneWay}" />
+                        </ScrollViewer>
+                    </Border>
                 </Grid>
             </sdk:TabItem>
         </sdk:TabControl>
-        <Grid Grid.Row="1" Margin="0,10,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <sdk:DataGrid ItemsSource="{Binding TextResults}" IsReadOnly="True" AutoGenerateColumns="False" VerticalAlignment="Top" 
-                          Visibility="{Binding ShowTextResultListing, Converter={StaticResource BooleanToVisibiltyConverter}, Mode=OneWay}" >
-                <sdk:DataGrid.Columns>
-                    <sdk:DataGridTextColumn Binding="{Binding Length}" Header="Length" IsReadOnly="True" />
-                    <sdk:DataGridTextColumn Binding="{Binding Value}" Header="Value" IsReadOnly="True" Width="*" />
-                </sdk:DataGrid.Columns>
-            </sdk:DataGrid>
-            <sdk:DataGrid IsReadOnly="True" ItemsSource="{Binding MatchResults}" AutoGenerateColumns="False" VerticalAlignment="Top" 
-                          Visibility="{Binding ShowMatchResultListing, Converter={StaticResource BooleanToVisibiltyConverter}, Mode=OneWay}">
-                <sdk:DataGrid.Columns>
-                    <sdk:DataGridTextColumn Binding="{Binding Index}" Header="Index" IsReadOnly="True" />
-                    <sdk:DataGridTextColumn Binding="{Binding Length}" Header="Length" IsReadOnly="True" />
-                    <sdk:DataGridTextColumn Binding="{Binding Value}" Header="Value" IsReadOnly="True" Width="*" />
-                    <sdk:DataGridTextColumn Binding="{Binding Groups, Converter={StaticResource CollectionToCountConverter}}" Header="Groups" IsReadOnly="True" />
-                    <sdk:DataGridTextColumn Binding="{Binding Captures, Converter={StaticResource CollectionToCountConverter}}" Header="Captures" IsReadOnly="True" />
-                </sdk:DataGrid.Columns>
-                <sdk:DataGrid.RowDetailsTemplate>
-                    <DataTemplate>
-                        <Views:MatchDetailsControl DataContext="{Binding}" />
-                    </DataTemplate>
-                </sdk:DataGrid.RowDetailsTemplate>
-            </sdk:DataGrid>
-            <ScrollViewer HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Button Content="Load" Width="75" Height="23" Margin="8,0,0,0" Command="{Binding LoadCommand, Mode=OneWay}" />
-                    <Button Grid.Column="1" Content="Save" Width="75" Height="23" Margin="8,0,0,0" Command="{Binding SaveCommand, Mode=OneWay}" />
-                    <Button Grid.Column="2" Content="Evaluate" Width="75" Height="23" Command="{Binding EvaluateExpressionCommand, Mode=OneWay}" Margin="8,0,0,0"/>
-                </Grid>
-            </ScrollViewer>
-            <Border Grid.Row="1" BorderThickness="2" CornerRadius="8" Margin="0,8,0,0" Padding="8" BorderBrush="{StaticResource BodyTextColorBrush}" 
-                    Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibiltyConverter}, Mode=OneWay}">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <TextBlock TextWrapping="Wrap" Text="{Binding ErrorMessage, Mode=OneWay}" />
-                </ScrollViewer>
-            </Border>
+        <Grid Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button Content="Load" Width="75" Height="23" Margin="8,0,0,0" Command="{Binding LoadCommand, Mode=OneWay}" />
+            <Button Grid.Column="1" Content="Save" Width="75" Height="23" Margin="8,0,0,0" Command="{Binding SaveCommand, Mode=OneWay}" />
+            <Button Grid.Column="2" Content="Evaluate" Width="75" Height="23" Command="{Binding EvaluateExpressionCommand, Mode=OneWay}" Margin="8,0,0,0"/>
         </Grid>
     </Grid>
 </sdk:Page>

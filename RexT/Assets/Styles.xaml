@@ -308,7 +308,20 @@
     <Setter Property="HorizontalAlignment" Value="Left"/>
   </Style>
 
-  <!-- Content Text Style -->
+    <Style x:Key="TopDetailHheadingTextBlockStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource BodyTextColorBrush}"/>
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Margin" Value="0,0,0,4"/>
+    </Style>
+
+    <Style x:Key="DetailHheadingTextBlockStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource BodyTextColorBrush}"/>
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Margin" Value="0,15,0,4"/>
+    </Style>
+    <!-- Content Text Style -->
   <Style x:Key="ContentTextStyle" TargetType="TextBlock">
     <Setter Property="Foreground" Value="{StaticResource BodyTextColorBrush}"/>
     <Setter Property="FontSize" Value="12"/>

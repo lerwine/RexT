@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Converters="clr-namespace:Erwine.Leonard.T.RexT.Converters">
     <Converters:BooleanToTextConverter x:Key="BooleanToTextConverter"/>
+    <Converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     <Converters:BooleanToVisibiltyConverter x:Key="BooleanToVisibiltyConverter" />
     <Converters:BooleanToVisibiltyConverter x:Key="InverseBooleanToVisibiltyConverter" TrueValue="Collapsed" FalseValue="Visible" NullValue="Visible" />
     <Converters:CollectionToTextConverter x:Key="CollectionToCountConverter" />

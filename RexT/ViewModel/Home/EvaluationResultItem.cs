@@ -5,36 +5,36 @@ using System.Windows;
 
 namespace Erwine.Leonard.T.RexT.ViewModel.Home
 {
-    public class MatchResultItem : BaseGroupItem
+    public class EvaluationResultItem : BaseGroupItem
     {
-        #region IsMessage Property Members
+        #region IsText Property Members
 
-        public const string PropertyName_IsMessage = "IsMessage";
+        public const string PropertyName_IsText = "IsText";
 
-        public static readonly DependencyProperty IsMessageProperty =
-            DependencyProperty.Register(MatchResultItem.PropertyName_IsMessage, typeof(bool), typeof(MatchResultItem),
+        public static readonly DependencyProperty IsTextProperty =
+            DependencyProperty.Register(EvaluationResultItem.PropertyName_IsText, typeof(bool), typeof(EvaluationResultItem),
                 new PropertyMetadata(false));
 
-        public bool IsMessage
+        public bool IsText
         {
-            get { return (bool)(this.GetValue(MatchResultItem.IsMessageProperty)); }
-            set { this.SetValue(MatchResultItem.IsMessageProperty, value); }
+            get { return (bool)(this.GetValue(EvaluationResultItem.IsTextProperty)); }
+            set { this.SetValue(EvaluationResultItem.IsTextProperty, value); }
         }
 
         #endregion
 
-        #region Message Property Members
+        #region MessageText Property Members
 
-        public const string PropertyName_Message = "Message";
+        public const string PropertyName_MessageText = "MessageText";
 
-        public static readonly DependencyProperty MessageProperty =
-            DependencyProperty.Register(MatchResultItem.PropertyName_Message, typeof(string), typeof(MatchResultItem),
+        public static readonly DependencyProperty MessageTextProperty =
+            DependencyProperty.Register(EvaluationResultItem.PropertyName_MessageText, typeof(string), typeof(EvaluationResultItem),
                 new PropertyMetadata(""));
 
-        public string Message
+        public string MessageText
         {
-            get { return this.GetValue(MatchResultItem.MessageProperty) as string; }
-            set { this.SetValue(MatchResultItem.MessageProperty, value); }
+            get { return this.GetValue(EvaluationResultItem.MessageTextProperty) as string; }
+            set { this.SetValue(EvaluationResultItem.MessageTextProperty, value); }
         }
 
         #endregion
@@ -44,13 +44,13 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
         public const string PropertyName_Groups = "Groups";
 
         public static readonly DependencyProperty GroupsProperty =
-            DependencyProperty.Register(MatchResultItem.PropertyName_Groups, typeof(ObservableCollection<GroupResultItem>), typeof(MatchResultItem),
+            DependencyProperty.Register(EvaluationResultItem.PropertyName_Groups, typeof(ObservableCollection<GroupResultItem>), typeof(EvaluationResultItem),
                 new PropertyMetadata(null));
 
         public ObservableCollection<GroupResultItem> Groups
         {
-            get { return (ObservableCollection<GroupResultItem>)(this.GetValue(MatchResultItem.GroupsProperty)); }
-            set { this.SetValue(MatchResultItem.GroupsProperty, value); }
+            get { return (ObservableCollection<GroupResultItem>)(this.GetValue(EvaluationResultItem.GroupsProperty)); }
+            set { this.SetValue(EvaluationResultItem.GroupsProperty, value); }
         }
 
         #endregion
@@ -60,14 +60,14 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
         public const string PropertyName_ShowGroups = "ShowGroups";
 
         public static readonly DependencyProperty ShowGroupsProperty =
-            DependencyProperty.Register(MatchResultItem.PropertyName_ShowGroups, typeof(bool), typeof(MatchResultItem),
+            DependencyProperty.Register(EvaluationResultItem.PropertyName_ShowGroups, typeof(bool), typeof(EvaluationResultItem),
                 new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
-                    (d as MatchResultItem).OnShowGroupsPropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+                    (d as EvaluationResultItem).OnShowGroupsPropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
 
         public bool ShowGroups
         {
-            get { return (bool)(this.GetValue(MatchResultItem.ShowGroupsProperty)); }
-            set { this.SetValue(MatchResultItem.ShowGroupsProperty, value); }
+            get { return (bool)(this.GetValue(EvaluationResultItem.ShowGroupsProperty)); }
+            set { this.SetValue(EvaluationResultItem.ShowGroupsProperty, value); }
         }
 
         protected virtual void OnShowGroupsPropertyChanged(bool oldValue, bool newValue)
@@ -194,38 +194,38 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
         public const string PropertyName_ShowEmptyGroups = "ShowEmptyGroups";
 
         public static readonly DependencyProperty ShowEmptyGroupsProperty =
-            DependencyProperty.Register(MatchResultItem.PropertyName_ShowEmptyGroups, typeof(bool), typeof(MatchResultItem),
+            DependencyProperty.Register(EvaluationResultItem.PropertyName_ShowEmptyGroups, typeof(bool), typeof(EvaluationResultItem),
                 new PropertyMetadata(false));
         private string p;
 
         public bool ShowEmptyGroups
         {
-            get { return (bool)(this.GetValue(MatchResultItem.ShowEmptyGroupsProperty)); }
-            set { this.SetValue(MatchResultItem.ShowEmptyGroupsProperty, value); }
+            get { return (bool)(this.GetValue(EvaluationResultItem.ShowEmptyGroupsProperty)); }
+            set { this.SetValue(EvaluationResultItem.ShowEmptyGroupsProperty, value); }
         }
 
         #endregion
 
-        public MatchResultItem()
+        public EvaluationResultItem()
             : base()
         {
             this.Groups = new ObservableCollection<GroupResultItem>();
         }
 
-        public MatchResultItem(Match match, Regex regex)
+        public EvaluationResultItem(Match match, Regex regex)
             : base(match)
         {
-            this.IsMessage = false;
+            this.IsText = false;
             this.Groups = new ObservableCollection<GroupResultItem>();
             for (int i = 0; i < match.Groups.Count; i++)
                 this.Groups.Add(new GroupResultItem(match.Groups[i], i, regex.GroupNameFromNumber(i)));
             this.ShowEmptyGroups = this.Groups.Count == 0 && this.ShowGroups;
         }
 
-        public MatchResultItem(string message)
+        public EvaluationResultItem(string message)
         {
-            this.IsMessage = true;
-            this.Message = message;
+            this.IsText = true;
+            this.MessageText = message;
         }
     }
 }

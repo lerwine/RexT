@@ -4,10 +4,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Xml;
 
 namespace Erwine.Leonard.T.RexT.ViewModel.Home
 {
@@ -98,6 +96,47 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
         void InputTextItem_Delete(object sender, EventArgs e)
         {
             this.InputText.Remove(sender as InputTextItem);
+            if (this.InputText.Count == 0)
+            {
+                this.InputText.Add(new InputTextItem());
+                this.SelectedInput = 0;
+            }
+            else if (this.SelectedInput < 0)
+                this.SelectedInput = 0;
+            else if (this.SelectedInput >= this.InputText.Count)
+                this.SelectedInput = this.InputText.Count - 1;
+        }
+
+        #endregion
+
+        #region SelectedInput Property Members
+
+        public const string PropertyName_SelectedInput = "SelectedInput";
+
+        public static readonly DependencyProperty SelectedInputProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_SelectedInput, typeof(int), typeof(PageViewModel),
+                new PropertyMetadata(-1));
+
+        public int SelectedInput
+        {
+            get { return (int)(this.GetValue(PageViewModel.SelectedInputProperty)); }
+            set { this.SetValue(PageViewModel.SelectedInputProperty, value); }
+        }
+
+        #endregion
+
+        #region SelectedResult Property Members
+
+        public const string PropertyName_SelectedResult = "SelectedResult";
+
+        public static readonly DependencyProperty SelectedResultProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_SelectedResult, typeof(int), typeof(PageViewModel),
+                new PropertyMetadata(-1));
+
+        public int SelectedResult
+        {
+            get { return (int)(this.GetValue(PageViewModel.SelectedResultProperty)); }
+            set { this.SetValue(PageViewModel.SelectedResultProperty, value); }
         }
 
         #endregion
@@ -377,6 +416,200 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         #endregion
 
+        #region ShowMatchResultListing Property Members
+
+        public const string PropertyName_ShowMatchResultListing = "ShowMatchResultListing";
+
+        public static readonly DependencyProperty ShowMatchResultListingProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_ShowMatchResultListing, typeof(bool), typeof(PageViewModel),
+                new PropertyMetadata(false));
+
+        public bool ShowMatchResultListing
+        {
+            get { return (bool)(this.GetValue(PageViewModel.ShowMatchResultListingProperty)); }
+            private set { this.SetValue(PageViewModel.ShowMatchResultListingProperty, value); }
+        }
+
+        #endregion
+
+        #region ShowTextResultListing Property Members
+
+        public const string PropertyName_ShowTextResultListing = "ShowTextResultListing";
+
+        public static readonly DependencyProperty ShowTextResultListingProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_ShowTextResultListing, typeof(bool), typeof(PageViewModel),
+                new PropertyMetadata(false));
+
+        public bool ShowTextResultListing
+        {
+            get { return (bool)(this.GetValue(PageViewModel.ShowTextResultListingProperty)); }
+            private set { this.SetValue(PageViewModel.ShowTextResultListingProperty, value); }
+        }
+
+        #endregion
+
+        #region Results Property Members
+
+        public const string PropertyName_Results = "Results";
+
+        public static readonly DependencyProperty ResultsProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_Results, typeof(ObservableCollection<EvalResultsViewModel>), typeof(PageViewModel),
+                new PropertyMetadata(null));
+
+        public ObservableCollection<EvalResultsViewModel> Results
+        {
+            get { return (ObservableCollection<EvalResultsViewModel>)(this.GetValue(PageViewModel.ResultsProperty)); }
+            set { this.SetValue(PageViewModel.ResultsProperty, value); }
+        }
+
+        #endregion
+
+        #region CountResultMessage Property Members
+
+        public const string PropertyName_CountResultMessage = "CountResultMessage";
+
+        public static readonly DependencyProperty CountResultMessageProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_CountResultMessage, typeof(string), typeof(PageViewModel),
+                new PropertyMetadata("", (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as PageViewModel).OnCountResultMessagePropertyChanged(e.OldValue as string, e.NewValue as string)));
+
+        public string CountResultMessage
+        {
+            get { return this.GetValue(PageViewModel.CountResultMessageProperty) as string; }
+            set { this.SetValue(PageViewModel.CountResultMessageProperty, value); }
+        }
+
+        protected virtual void OnCountResultMessagePropertyChanged(string oldValue, string newValue)
+        {
+            this.ShowCountMessage = !String.IsNullOrWhiteSpace(newValue);
+        }
+
+        #endregion
+
+        #region ShowCountMessage Property Members
+
+        public const string PropertyName_ShowCountMessage = "ShowCountMessage";
+
+        public static readonly DependencyProperty ShowCountMessageProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_ShowCountMessage, typeof(bool), typeof(PageViewModel),
+                new PropertyMetadata(false));
+
+        public bool ShowCountMessage
+        {
+            get { return (bool)(this.GetValue(PageViewModel.ShowCountMessageProperty)); }
+            set { this.SetValue(PageViewModel.ShowCountMessageProperty, value); }
+        }
+
+        #endregion
+
+        #region OptionsTabSelected Property Members
+
+        public const string PropertyName_OptionsTabSelected = "OptionsTabSelected";
+
+        public static readonly DependencyProperty OptionsTabSelectedProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_OptionsTabSelected, typeof(bool), typeof(PageViewModel),
+                new PropertyMetadata(true, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as PageViewModel).OnOptionsTabSelectedPropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+
+        public bool OptionsTabSelected
+        {
+            get { return (bool)(this.GetValue(PageViewModel.OptionsTabSelectedProperty)); }
+            set { this.SetValue(PageViewModel.OptionsTabSelectedProperty, value); }
+        }
+
+        protected virtual void OnOptionsTabSelectedPropertyChanged(bool oldValue, bool newValue)
+        {
+            if (!newValue)
+                return;
+
+            this.PatternTabSelected = false;
+            this.InputTabSelected = false;
+            this.ResultsTabSelected = false;
+        }
+
+        #endregion
+
+        #region PatternTabSelected Property Members
+
+        public const string PropertyName_PatternTabSelected = "PatternTabSelected";
+
+        public static readonly DependencyProperty PatternTabSelectedProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_PatternTabSelected, typeof(bool), typeof(PageViewModel),
+                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as PageViewModel).OnPatternTabSelectedPropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+
+        public bool PatternTabSelected
+        {
+            get { return (bool)(this.GetValue(PageViewModel.PatternTabSelectedProperty)); }
+            set { this.SetValue(PageViewModel.PatternTabSelectedProperty, value); }
+        }
+
+        protected virtual void OnPatternTabSelectedPropertyChanged(bool oldValue, bool newValue)
+        {
+            if (!newValue)
+                return;
+
+            this.OptionsTabSelected = false;
+            this.InputTabSelected = false;
+            this.ResultsTabSelected = false;
+        }
+
+        #endregion
+
+        #region InputTabSelected Property Members
+
+        public const string PropertyName_InputTabSelected = "InputTabSelected";
+
+        public static readonly DependencyProperty InputTabSelectedProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_InputTabSelected, typeof(bool), typeof(PageViewModel),
+                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as PageViewModel).OnInputTabSelectedPropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+
+        public bool InputTabSelected
+        {
+            get { return (bool)(this.GetValue(PageViewModel.InputTabSelectedProperty)); }
+            set { this.SetValue(PageViewModel.InputTabSelectedProperty, value); }
+        }
+
+        protected virtual void OnInputTabSelectedPropertyChanged(bool oldValue, bool newValue)
+        {
+            if (!newValue)
+                return;
+
+            this.OptionsTabSelected = false;
+            this.PatternTabSelected = false;
+            this.ResultsTabSelected = false;
+        }
+
+        #endregion
+
+        #region ResultsTabSelected Property Members
+
+        public const string PropertyName_ResultsTabSelected = "ResultsTabSelected";
+
+        public static readonly DependencyProperty ResultsTabSelectedProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_ResultsTabSelected, typeof(bool), typeof(PageViewModel),
+                new PropertyMetadata(false, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as PageViewModel).OnResultsTabSelectedPropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
+
+        public bool ResultsTabSelected
+        {
+            get { return (bool)(this.GetValue(PageViewModel.ResultsTabSelectedProperty)); }
+            set { this.SetValue(PageViewModel.ResultsTabSelectedProperty, value); }
+        }
+
+        protected virtual void OnResultsTabSelectedPropertyChanged(bool oldValue, bool newValue)
+        {
+            if (!newValue)
+                return;
+
+            this.OptionsTabSelected = false;
+            this.PatternTabSelected = false;
+            this.InputTabSelected = false;
+        }
+
+        #endregion
+
         #region EvaluateExpression Command Property Members
 
         private Events.RelayCommand _evaluateExpressionCommand = null;
@@ -404,38 +637,33 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
             int countValue = this.CountValue;
             List<Tuple<InputTextItem, Match[]>> matches = new List<Tuple<InputTextItem,Match[]>>();
             List<Tuple<InputTextItem, string[]>> results = new List<Tuple<InputTextItem,string[]>>();
-            Regex regex = null;
 
-            Task task = Task.Factory.StartNew(() =>
+            try
             {
-                regex = new Regex(pattern, this.Options.Value);
-                foreach (InputTextItem item in this.InputText)
+                Regex regex = new Regex(pattern, this.Options.Value);
+                for (int index = 0; index < this.InputText.Count; index++)
                 {
+                    if (!this.InputText[index].AlwaysEvaluate && index != this.SelectedInput)
+                        continue;
+
                     switch (this.EvalOperation.Value)
                     {
                         case DataModel.OperationType.SingleMatch:
-                            matches.Add(new Tuple<InputTextItem, Match[]>(item, new Match[] { regex.Match(item.GetText()) }));
+                            matches.Add(new Tuple<InputTextItem, Match[]>(this.InputText[index], new Match[] { regex.Match(this.InputText[index].GetText()) }));
                             break;
                         case DataModel.OperationType.MultiMatch:
-                            matches.Add(new Tuple<InputTextItem, Match[]>(item, regex.Matches(item.GetText()).OfType<Match>().ToArray()));
+                            matches.Add(new Tuple<InputTextItem, Match[]>(this.InputText[index], regex.Matches(this.InputText[index].GetText()).OfType<Match>().ToArray()));
                             break;
                         case DataModel.OperationType.Replace:
-                            results.Add(new Tuple<InputTextItem, string[]>(item, new string[] { (specifyCount) ? regex.Replace(item.GetText(), replacementText, countValue) :
-                                regex.Replace(item.GetText(), replacementText) }));
+                            results.Add(new Tuple<InputTextItem, string[]>(this.InputText[index], new string[] { (specifyCount) ? regex.Replace(this.InputText[index].GetText(), replacementText, countValue) :
+                                regex.Replace(this.InputText[index].GetText(), replacementText) }));
                             break;
                         default:
-                            results.Add(new Tuple<InputTextItem, string[]>(item, (specifyCount) ? regex.Split(item.GetText(), countValue) : regex.Split(item.GetText())));
+                            results.Add(new Tuple<InputTextItem, string[]>(this.InputText[index], (specifyCount) ? regex.Split(this.InputText[index].GetText(), countValue) : regex.Split(this.InputText[index].GetText())));
                             break;
                     }
                 }
-            });
 
-            task.Wait();
-
-            if (task.IsFaulted)
-                this.ErrorMessage = task.Exception.Message;
-            else
-            {
                 switch (this.EvalOperation.Value)
                 {
                     case DataModel.OperationType.SingleMatch:
@@ -452,7 +680,13 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
                         break;
                 }
             }
+            catch (Exception exc)
+            {
+                this.ErrorMessage = exc.Message;
+            }
 
+            this.ResultsTabSelected = true;
+            this.SelectedResult = (this.Results.Count == 0) ? -1 : 0;
             this.IsBusy = false;
         }
 
@@ -466,14 +700,9 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
                 return;
             }
 
-            this.TextResults.Clear();
+            this.Results.Clear();
             foreach (Tuple<InputTextItem, string[]> item in results)
-            {
-                this.TextResults.Add(new TextResultItem(String.Format("{0}: {1} result{2}.", item.Item1.Name, (item.Item2.Length == 0) ? "no" : item.Item2.Length.ToString(),
-                    (item.Item2.Length == 1) ? "" : "s")));
-                foreach (string s in item.Item2)
-                    this.TextResults.Add(new TextResultItem(s, true));
-            }
+                this.Results.Add(new EvalResultsViewModel(item.Item1, item.Item2, this.EvalOperation.Value));
 
             this.ShowTextResultListing = true;
             this.CountResultMessage = (displayResultCount) ? String.Format("{0} items.", results.Count) : "";
@@ -490,14 +719,9 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
                 return;
             }
 
-            this.MatchResults.Clear();
+            this.Results.Clear();
             foreach (Tuple<InputTextItem, Match[]> item in matches)
-            {
-                this.MatchResults.Add(new MatchResultItem(String.Format("{0}: {1} result{2}.", item.Item1.Name, (item.Item2.Length == 0) ? "no" : item.Item2.Length.ToString(),
-                    (item.Item2.Length == 1) ? "" : "s")));
-                foreach (Match m in item.Item2)
-                    this.MatchResults.Add(new MatchResultItem(m, regex));
-            }
+                this.Results.Add(new EvalResultsViewModel(item.Item1, regex, item.Item2, this.EvalOperation.Value));
 
             this.ShowMatchResultListing = true;
             this.CountResultMessage = (displayResultCount) ? String.Format("{0} matches.", matches.Count) : "";
@@ -522,7 +746,19 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         protected virtual void OnNewInput(object parameter)
         {
-            this.InputText.Add(new InputTextItem());
+            string name = "";
+            for (int i = 0; i < int.MaxValue; i++)
+            {
+                string n = String.Format("Input #{0}", i);
+                if (!this.InputText.Any(t => String.Compare(t.Name.Trim(), n, StringComparison.CurrentCultureIgnoreCase) == 0))
+                {
+                    name = n;
+                    break;
+                }
+            }
+            
+            this.InputText.Add(new InputTextItem { Name = name });
+            this.SelectedInput = this.InputText.Count - 1;
         }
 
         #endregion
@@ -634,115 +870,15 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         #endregion
 
-        #region ShowMatchResultListing Property Members
-
-        public const string PropertyName_ShowMatchResultListing = "ShowMatchResultListing";
-
-        public static readonly DependencyProperty ShowMatchResultListingProperty =
-            DependencyProperty.Register(PageViewModel.PropertyName_ShowMatchResultListing, typeof(bool), typeof(PageViewModel),
-                new PropertyMetadata(false));
-
-        public bool ShowMatchResultListing
-        {
-            get { return (bool)(this.GetValue(PageViewModel.ShowMatchResultListingProperty)); }
-            private set { this.SetValue(PageViewModel.ShowMatchResultListingProperty, value); }
-        }
-
-        #endregion
-
-        #region ShowTextResultListing Property Members
-
-        public const string PropertyName_ShowTextResultListing = "ShowTextResultListing";
-
-        public static readonly DependencyProperty ShowTextResultListingProperty =
-            DependencyProperty.Register(PageViewModel.PropertyName_ShowTextResultListing, typeof(bool), typeof(PageViewModel),
-                new PropertyMetadata(false));
-
-        public bool ShowTextResultListing
-        {
-            get { return (bool)(this.GetValue(PageViewModel.ShowTextResultListingProperty)); }
-            private set { this.SetValue(PageViewModel.ShowTextResultListingProperty, value); }
-        }
-
-        #endregion
-
-        #region TextResults Property Members
-
-        public const string PropertyName_TextResults = "TextResults";
-
-        public static readonly DependencyProperty TextResultsProperty =
-            DependencyProperty.Register(PageViewModel.PropertyName_TextResults, typeof(ObservableCollection<TextResultItem>), typeof(PageViewModel),
-                new PropertyMetadata(null));
-
-        public ObservableCollection<TextResultItem> TextResults
-        {
-            get { return (ObservableCollection<TextResultItem>)(this.GetValue(PageViewModel.TextResultsProperty)); }
-            private set { this.SetValue(PageViewModel.TextResultsProperty, value); }
-        }
-
-        #endregion
-
-        #region MatchResults Property Members
-
-        public const string PropertyName_MatchResults = "MatchResults";
-
-        public static readonly DependencyProperty MatchResultsProperty =
-            DependencyProperty.Register(PageViewModel.PropertyName_MatchResults, typeof(ObservableCollection<MatchResultItem>), typeof(PageViewModel),
-                new PropertyMetadata(null));
-
-        public ObservableCollection<MatchResultItem> MatchResults
-        {
-            get { return (ObservableCollection<MatchResultItem>)(this.GetValue(PageViewModel.MatchResultsProperty)); }
-            private set { this.SetValue(PageViewModel.MatchResultsProperty, value); }
-        }
-
-        #endregion
-
-        #region CountResultMessage Property Members
-
-        public const string PropertyName_CountResultMessage = "CountResultMessage";
-
-        public static readonly DependencyProperty CountResultMessageProperty =
-            DependencyProperty.Register(PageViewModel.PropertyName_CountResultMessage, typeof(string), typeof(PageViewModel),
-                new PropertyMetadata("", (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
-                    (d as PageViewModel).OnCountResultMessagePropertyChanged(e.OldValue as string, e.NewValue as string)));
-
-        public string CountResultMessage
-        {
-            get { return this.GetValue(PageViewModel.CountResultMessageProperty) as string; }
-            set { this.SetValue(PageViewModel.CountResultMessageProperty, value); }
-        }
-
-        protected virtual void OnCountResultMessagePropertyChanged(string oldValue, string newValue)
-        {
-            this.ShowCountMessage = !String.IsNullOrWhiteSpace(newValue);
-        }
-
-        #endregion
-
-        #region ShowCountMessage Property Members
-
-        public const string PropertyName_ShowCountMessage = "ShowCountMessage";
-
-        public static readonly DependencyProperty ShowCountMessageProperty =
-            DependencyProperty.Register(PageViewModel.PropertyName_ShowCountMessage, typeof(bool), typeof(PageViewModel),
-                new PropertyMetadata(false));
-
-        public bool ShowCountMessage
-        {
-            get { return (bool)(this.GetValue(PageViewModel.ShowCountMessageProperty)); }
-            set { this.SetValue(PageViewModel.ShowCountMessageProperty, value); }
-        }
-
-        #endregion
-
         public PageViewModel()
             : base()
         {
             this.Options = new RegexOptionsViewModel();
             this.EvalOperation = new OperationSettingsViewModel();
-            this.TextResults = new ObservableCollection<TextResultItem>();
-            this.MatchResults = new ObservableCollection<MatchResultItem>();
+            this.Results = new ObservableCollection<EvalResultsViewModel>();
+            this.InputText = new ObservableCollection<InputTextItem>();
+            this.InputText.Add(new InputTextItem { Name = "Input #1" });
+            this.SelectedInput = 0;
         }
     }
 }

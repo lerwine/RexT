@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Windows;
 
 namespace Erwine.Leonard.T.RexT.ViewModel.Home
@@ -59,12 +60,18 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         public static readonly DependencyProperty IsMultilineProperty =
             DependencyProperty.Register(InputTextItem.PropertyName_IsMultiline, typeof(bool), typeof(InputTextItem),
-                new PropertyMetadata(false));
+                new PropertyMetadata(true, (DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+                    (d as InputTextItem).OnIsMultilinePropertyChanged((bool)(e.OldValue), (bool)(e.NewValue))));
 
         public bool IsMultiline
         {
             get { return (bool)(this.GetValue(InputTextItem.IsMultilineProperty)); }
             set { this.SetValue(InputTextItem.IsMultilineProperty, value); }
+        }
+
+        protected virtual void OnIsMultilinePropertyChanged(bool oldValue, bool newValue)
+        {
+            // TODO: Implement OnIsMultilinePropertyChanged Logic
         }
 
         #endregion
@@ -253,7 +260,34 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         internal string GetText()
         {
-            throw new NotImplementedException();
+            string result = this.Text;
+
+            switch (this.TextInputEncoding)
+            {
+                case DataModel.TextInputEncodingValue.Html:
+                    try
+                    {
+                        result = System.Windows.Browser.HttpUtility.HtmlDecode(this.Text);
+                    }
+                    catch { }
+                    break;
+                case DataModel.TextInputEncodingValue.Uri:
+                    try
+                    {
+                        result = Uri.UnescapeDataString(this.Text);
+                    }
+                    catch { }
+                    break;
+                case DataModel.TextInputEncodingValue.Utf8:
+                    byte[] converted = Encoding.Convert(Encoding.Unicode, Encoding.UTF8, Encoding.Unicode.GetBytes(this.Text));
+                    result = Encoding.UTF8.GetString(converted, 0, converted.Length);
+                    break;
+                default:
+                    result = this.Text;
+                    break;
+            }
+
+            return result;
         }
     }
 }

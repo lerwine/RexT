@@ -6,7 +6,6 @@ namespace Erwine.Leonard.T.RexT.Converters
 {
     public class InverseBooleanConverter : DependencyObject, IValueConverter
     {
-
         #region NullValue Property Members
 
         public const string PropertyName_NullValue = "NullValue";

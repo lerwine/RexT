@@ -91,6 +91,9 @@
     <Compile Include="Converters\CollectionToTextConverter.cs" />
     <Compile Include="Converters\CollectionToVisibilityConverter.cs" />
     <Compile Include="Converters\InverseBooleanConverter.cs" />
+    <Compile Include="Converters\OperationTypeToTextConverter.cs" />
+    <Compile Include="Converters\OperationTypeToVisibilityConverter.cs" />
+    <Compile Include="Converters\TextToSingleLineConverter.cs" />
     <Compile Include="DataModel\InputTextSettings.cs" />
     <Compile Include="DataModel\OperationType.cs" />
     <Compile Include="DataModel\SerializableDataModel.cs" />
@@ -109,9 +112,10 @@
     <Compile Include="ViewModel\Builder\RootNode.cs" />
     <Compile Include="ViewModel\Home\BaseGroupItem.cs" />
     <Compile Include="ViewModel\Home\CaptureResultItem.cs" />
+    <Compile Include="ViewModel\Home\EvalResultsViewModel.cs" />
     <Compile Include="ViewModel\Home\GroupResultItem.cs" />
     <Compile Include="ViewModel\Home\InputTextItem.cs" />
-    <Compile Include="ViewModel\Home\MatchResultItem.cs" />
+    <Compile Include="ViewModel\Home\EvaluationResultItem.cs" />
     <Compile Include="ViewModel\Home\PageViewModel.cs" />
     <Compile Include="DataModel\TextInputEncodingValue.cs" />
     <Compile Include="ViewModel\Home\TextResultItem.cs" />
@@ -147,6 +151,9 @@
     <Compile Include="Views\RegecOptionsControl.xaml.cs">
       <DependentUpon>RegecOptionsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ResultItemControl.xaml.cs">
+      <DependentUpon>ResultItemControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ResultsDataContext.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -171,6 +178,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RegecOptionsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ResultItemControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

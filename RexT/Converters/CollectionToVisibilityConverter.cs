@@ -64,7 +64,7 @@ namespace Erwine.Leonard.T.RexT.Converters
             return (collection.Count == 0) ? this.EmptyValue : this.NonEmptyValue;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             throw new NotSupportedException();
         }

@@ -6,7 +6,6 @@ namespace Erwine.Leonard.T.RexT.Converters
 {
     public class BooleanToTextConverter : DependencyObject, IValueConverter
     {
-
         #region TrueValue Property Members
 
         public const string PropertyName_TrueValue = "TrueValue";
@@ -65,7 +64,7 @@ namespace Erwine.Leonard.T.RexT.Converters
             return this.NullValue;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        object IValueConverter.ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             throw new NotSupportedException();
         }

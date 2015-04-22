@@ -8,7 +8,7 @@
              x:Class="Erwine.Leonard.T.RexT.Views.MatchDetailsControl"
              mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="400">
     <UserControl.DataContext>
-        <vm:MatchResultItem />
+        <vm:EvaluationResultItem />
     </UserControl.DataContext>
     <Grid x:Name="LayoutRoot" Background="White">
         <Grid.ColumnDefinitions>
