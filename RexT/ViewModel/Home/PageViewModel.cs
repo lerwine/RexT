@@ -702,7 +702,7 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
             this.Results.Clear();
             foreach (Tuple<InputTextItem, string[]> item in results)
-                this.Results.Add(new EvalResultsViewModel(item.Item1, item.Item2, this.EvalOperation.Value));
+                this.Results.Add(new EvalResultsViewModel(this, item.Item1, item.Item2, this.EvalOperation.Value));
 
             this.ShowTextResultListing = true;
             this.CountResultMessage = (displayResultCount) ? String.Format("{0} items.", results.Count) : "";
@@ -721,7 +721,7 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
             this.Results.Clear();
             foreach (Tuple<InputTextItem, Match[]> item in matches)
-                this.Results.Add(new EvalResultsViewModel(item.Item1, regex, item.Item2, this.EvalOperation.Value));
+                this.Results.Add(new EvalResultsViewModel(this, item.Item1, regex, item.Item2, this.EvalOperation.Value));
 
             this.ShowMatchResultListing = true;
             this.CountResultMessage = (displayResultCount) ? String.Format("{0} matches.", matches.Count) : "";
@@ -879,6 +879,107 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
             this.InputText = new ObservableCollection<InputTextItem>();
             this.InputText.Add(new InputTextItem { Name = "Input #1" });
             this.SelectedInput = 0;
+        }
+
+        #region TextDetailIsVisible Property Members
+
+        public const string PropertyName_TextDetailIsVisible = "TextDetailIsVisible";
+
+        public static readonly DependencyProperty TextDetailIsVisibleProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_TextDetailIsVisible, typeof(bool), typeof(PageViewModel),
+                new PropertyMetadata(false));
+
+        public bool TextDetailIsVisible
+        {
+            get { return (bool)(this.GetValue(PageViewModel.TextDetailIsVisibleProperty)); }
+            set { this.SetValue(PageViewModel.TextDetailIsVisibleProperty, value); }
+        }
+
+        #endregion
+
+        #region TextDetailContent Property Members
+
+        public const string PropertyName_TextDetailContent = "TextDetailContent";
+
+        public static readonly DependencyProperty TextDetailContentProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_TextDetailContent, typeof(string), typeof(PageViewModel),
+                new PropertyMetadata(""));
+
+        public string TextDetailContent
+        {
+            get { return this.GetValue(PageViewModel.TextDetailContentProperty) as string; }
+            set { this.SetValue(PageViewModel.TextDetailContentProperty, value); }
+        }
+
+        #endregion
+
+        #region TextDetailLines Property Members
+
+        public const string PropertyName_TextDetailLines = "TextDetailLines";
+
+        public static readonly DependencyProperty TextDetailLinesProperty =
+            DependencyProperty.Register(PageViewModel.PropertyName_TextDetailLines, typeof(ObservableCollection<TextDetailLineViewModel>), typeof(PageViewModel),
+                new PropertyMetadata(null));
+
+        public ObservableCollection<TextDetailLineViewModel> TextDetailLines
+        {
+            get { return (ObservableCollection<TextDetailLineViewModel>)(this.GetValue(PageViewModel.TextDetailLinesProperty)); }
+            set { this.SetValue(PageViewModel.TextDetailLinesProperty, value); }
+        }
+
+        #endregion
+
+        #region CloseTextDetails Command Property Members
+
+        private Events.RelayCommand _closeTextDetailsCommand = null;
+
+        public Events.RelayCommand CloseTextDetailsCommand
+        {
+            get
+            {
+                if (this._closeTextDetailsCommand == null)
+                    this._closeTextDetailsCommand = new Events.RelayCommand(this.OnCloseTextDetails);
+
+                return this._closeTextDetailsCommand;
+            }
+        }
+
+        protected virtual void OnCloseTextDetails(object parameter)
+        {
+            this.TextDetailIsVisible = false;
+        }
+
+        #endregion
+
+        public static readonly Regex GetLineRegex = new Regex(@"^[^\r\n]*(\r\n?|\n)");
+
+        internal void ShowTextDetail(string text)
+        {
+            if (text == null)
+            {
+                this.TextDetailIsVisible = false;
+                return;
+            }
+
+            this.TextDetailContent = text;
+            this.TextDetailIsVisible = true;
+            if (this.TextDetailLines == null)
+                this.TextDetailLines = new ObservableCollection<TextDetailLineViewModel>();
+            else
+                this.TextDetailLines.Clear();
+
+            string s = text;
+            Match m;
+            int lineNumber = 0;
+            while ((m = PageViewModel.GetLineRegex.Match(s)).Success)
+            {
+                this.TextDetailLines.Add(new TextDetailLineViewModel(lineNumber, m.Value));
+                lineNumber++;
+                s = s.Substring(m.Length);
+            }
+
+            if (s.Length > 0)
+                this.TextDetailLines.Add(new TextDetailLineViewModel(lineNumber, s));
         }
     }
 }

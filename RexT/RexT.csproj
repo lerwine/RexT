@@ -118,6 +118,8 @@
     <Compile Include="ViewModel\Home\EvaluationResultItem.cs" />
     <Compile Include="ViewModel\Home\PageViewModel.cs" />
     <Compile Include="DataModel\TextInputEncodingValue.cs" />
+    <Compile Include="ViewModel\Home\TextDetailCharViewModel.cs" />
+    <Compile Include="ViewModel\Home\TextDetailLineViewModel.cs" />
     <Compile Include="ViewModel\Home\TextResultItem.cs" />
     <Compile Include="ViewModel\OperationSettingsValueEventArgs.cs" />
     <Compile Include="ViewModel\OperationSettingsViewModel.cs" />

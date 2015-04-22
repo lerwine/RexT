@@ -181,5 +181,45 @@
             <Button Grid.Column="1" Content="Save" Width="75" Height="23" Margin="8,0,0,0" Command="{Binding SaveCommand, Mode=OneWay}" />
             <Button Grid.Column="2" Content="Evaluate" Width="75" Height="23" Command="{Binding EvaluateExpressionCommand, Mode=OneWay}" Margin="8,0,0,0"/>
         </Grid>
+        
+        <Border Grid.RowSpan="2" Visibility="{Binding Path=TextDetailIsVisible, Converter={StaticResource BooleanToVisibiltyConverter}}" Background="#99000000" Padding="64">
+            <Border Background="White" BorderBrush="Black" BorderThickness="2" CornerRadius="8" Padding="8,4,8,8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBox Text="{Binding Path=TextDetailContent,Mode=OneWay}" IsReadOnly="True" />
+                    <sdk:DataGrid Grid.Row="1" AutoGenerateColumns="False" SelectionMode="Single" IsReadOnly="True" ItemsSource="{Binding Path=TextDetailLines}">
+                        <sdk:DataGrid.Columns>
+                            <sdk:DataGridTextColumn Binding="{Binding Path=LineNumber}" Header="Line" />
+                            <sdk:DataGridTextColumn Binding="{Binding Path=Content.Length}" Header="Length" />
+                        </sdk:DataGrid.Columns>
+                        <sdk:DataGrid.RowDetailsTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition />
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBox Text="{Binding Path=Content,Mode=OneWay}" IsReadOnly="True" />
+                                    <sdk:DataGrid Grid.Row="1" AutoGenerateColumns="False" SelectionMode="Single" IsReadOnly="True" ItemsSource="{Binding Path=Characters}">
+                                        <sdk:DataGrid.Columns>
+                                            <sdk:DataGridTextColumn Binding="{Binding Path=Column}" Header="Column" />
+                                            <sdk:DataGridTextColumn Binding="{Binding Path=Category}" Header="Category" />
+                                            <sdk:DataGridTextColumn Binding="{Binding Path=Value}" Header="Value" />
+                                            <sdk:DataGridTextColumn Binding="{Binding Path=Content}" Header="Content" />
+                                        </sdk:DataGrid.Columns>
+                                    </sdk:DataGrid>
+                                </Grid>
+                            </DataTemplate>
+                        </sdk:DataGrid.RowDetailsTemplate>
+                    </sdk:DataGrid>
+                    <Button Grid.Row="2" Content="Close" Command="{Binding Path=CloseTextDetailsCommand, Mode=OneWay}" HorizontalAlignment="Right" />
+                </Grid>
+            </Border>
+        </Border>
     </Grid>
 </sdk:Page>

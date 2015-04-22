@@ -23,22 +23,6 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         #endregion
 
-        #region MessageText Property Members
-
-        public const string PropertyName_MessageText = "MessageText";
-
-        public static readonly DependencyProperty MessageTextProperty =
-            DependencyProperty.Register(EvaluationResultItem.PropertyName_MessageText, typeof(string), typeof(EvaluationResultItem),
-                new PropertyMetadata(""));
-
-        public string MessageText
-        {
-            get { return this.GetValue(EvaluationResultItem.MessageTextProperty) as string; }
-            set { this.SetValue(EvaluationResultItem.MessageTextProperty, value); }
-        }
-
-        #endregion
-
         #region Groups Property Members
 
         public const string PropertyName_Groups = "Groups";
@@ -206,26 +190,29 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         #endregion
 
+        private PageViewModel _pageViewModel;
+
         public EvaluationResultItem()
             : base()
         {
             this.Groups = new ObservableCollection<GroupResultItem>();
         }
 
-        public EvaluationResultItem(Match match, Regex regex)
-            : base(match)
+        public EvaluationResultItem(PageViewModel pageViewModel, Match match, Regex regex)
+            : base(pageViewModel, match)
         {
+            this._pageViewModel = pageViewModel;
             this.IsText = false;
             this.Groups = new ObservableCollection<GroupResultItem>();
             for (int i = 0; i < match.Groups.Count; i++)
-                this.Groups.Add(new GroupResultItem(match.Groups[i], i, regex.GroupNameFromNumber(i)));
+                this.Groups.Add(new GroupResultItem(pageViewModel, match.Groups[i], i, regex.GroupNameFromNumber(i)));
             this.ShowEmptyGroups = this.Groups.Count == 0 && this.ShowGroups;
         }
 
-        public EvaluationResultItem(string message)
+        public EvaluationResultItem(PageViewModel pageViewModel, string message)
         {
             this.IsText = true;
-            this.MessageText = message;
+            this.Value = message;
         }
     }
 }

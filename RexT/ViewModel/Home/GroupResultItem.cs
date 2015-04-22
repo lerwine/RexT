@@ -45,8 +45,8 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
             this.Captures = new ObservableCollection<CaptureResultItem>();
         }
 
-        public GroupResultItem(Group group, int number, string name)
-            : base(group)
+        public GroupResultItem(PageViewModel pageViewModel, Group group, int number, string name)
+            : base(pageViewModel, group)
         {
             this.Number = number;
             this.Name = name;

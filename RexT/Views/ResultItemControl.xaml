@@ -45,7 +45,14 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <TextBlock Text="Value" Style="{StaticResource TopDetailHheadingTextBlockStyle}" />
-                        <TextBox Grid.Row="1" IsReadOnly="True" Text="{Binding Path=Value, Mode=OneWay}" AcceptsReturn="True" VerticalScrollBarVisibility="Disabled" />
+                        <Grid Grid.Row="1" Margin="32,0,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox IsReadOnly="True" Text="{Binding Path=Value, Mode=OneWay}" AcceptsReturn="True" VerticalScrollBarVisibility="Disabled" />
+                            <Button Grid.Column="1" Content="!" Command="{Binding Path=ShowValueDetailsCommand}" />
+                        </Grid>
                         <TextBlock Grid.Row="2" Text="{Binding Path=Groups, Mode=OneWay, Converter={StaticResource GroupsHeadingConverter}}" Style="{StaticResource DetailHheadingTextBlockStyle}" />
                         <sdk:DataGrid Grid.Row="3" SelectionMode="Single" IsReadOnly="True" AutoGenerateColumns="False" ItemsSource="{Binding Path=Groups}" Visibility="{Binding Path=Groups, Converter={StaticResource CollectionToVisibilityConverter}}">
                             <sdk:DataGrid.Columns>
@@ -73,7 +80,14 @@
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <TextBlock Text="Value" Style="{StaticResource TopDetailHheadingTextBlockStyle}" />
-                                        <TextBox Grid.Row="1" IsReadOnly="True" Text="{Binding Path=Value, Mode=OneWay}" AcceptsReturn="True" VerticalScrollBarVisibility="Disabled" />
+                                        <Grid Grid.Row="1" Margin="32,0,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox IsReadOnly="True" Text="{Binding Path=Value, Mode=OneWay}" AcceptsReturn="True" VerticalScrollBarVisibility="Disabled" />
+                                            <Button Grid.Column="1" Content="!" Command="{Binding Path=ShowValueDetailsCommand}" />
+                                        </Grid>
                                         <TextBlock Text="{Binding Path=Captures, Mode=OneWay, Converter={StaticResource CapturesHeadingConverter}}" Grid.Row="2" Style="{StaticResource DetailHheadingTextBlockStyle}" />
                                         <sdk:DataGrid Grid.Row="3" SelectionMode="Single" IsReadOnly="True" AutoGenerateColumns="False" ItemsSource="{Binding Path=Captures, Mode=OneWay}" Visibility="{Binding Path=Captures, Mode=OneWay, Converter={StaticResource CollectionToVisibilityConverter}}">
                                             <sdk:DataGrid.Columns>
@@ -90,7 +104,14 @@
                                             </sdk:DataGrid.Columns>
                                             <sdk:DataGrid.RowDetailsTemplate>
                                                 <DataTemplate>
-                                                    <TextBox Margin="32,0,0,0" Grid.Row="1" IsReadOnly="True" Text="{Binding Path=Value, Mode=OneWay}" AcceptsReturn="True" VerticalScrollBarVisibility="Disabled" />
+                                                    <Grid Margin="32,0,0,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBox Grid.Row="1" IsReadOnly="True" Text="{Binding Path=Value, Mode=OneWay}" AcceptsReturn="True" VerticalScrollBarVisibility="Disabled" />
+                                                        <Button Content="!" Command="{Binding Path=ShowValueDetailsCommand}" />
+                                                    </Grid>
                                                 </DataTemplate>
                                             </sdk:DataGrid.RowDetailsTemplate>
                                         </sdk:DataGrid>
@@ -114,7 +135,14 @@
                             </sdk:DataGrid.Columns>
                             <sdk:DataGrid.RowDetailsTemplate>
                                 <DataTemplate>
-                                    <TextBox Margin="32,0,0,0" Grid.Row="1" IsReadOnly="True" Text="{Binding Path=Value, Mode=OneWay}" AcceptsReturn="True" VerticalScrollBarVisibility="Disabled" />
+                                    <Grid Margin="32,0,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox IsReadOnly="True" Text="{Binding Path=Value, Mode=OneWay}" AcceptsReturn="True" VerticalScrollBarVisibility="Disabled" />
+                                        <Button Grid.Column="1" Content="!" Command="{Binding Path=ShowValueDetailsCommand}" />
+                                    </Grid>
                                 </DataTemplate>
                             </sdk:DataGrid.RowDetailsTemplate>
                         </sdk:DataGrid>
@@ -130,7 +158,14 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBox Text="{Binding Path=Value, Mode=OneWay}" IsReadOnly="True" Margin="2" />
+                    <Grid Margin="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox IsReadOnly="True" Text="{Binding Path=Value, Mode=OneWay}" AcceptsReturn="True" VerticalScrollBarVisibility="Disabled" />
+                        <Button Grid.Column="1" Content="!" Command="{Binding Path=ShowValueDetailsCommand}" />
+                    </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

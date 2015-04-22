@@ -151,12 +151,12 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
             this.Captures = new ObservableCollection<CaptureResultItem>();
         }
 
-        public BaseGroupItem(Group group)
-            : base(group)
+        public BaseGroupItem(PageViewModel pageViewModel, Group group)
+            : base(pageViewModel, group)
         {
             this.Success = group.Success;
-            
-            this.Captures = new ObservableCollection<CaptureResultItem>(group.Captures.OfType<Capture>().Select(c => new CaptureResultItem(c)));
+
+            this.Captures = new ObservableCollection<CaptureResultItem>(group.Captures.OfType<Capture>().Select(c => new CaptureResultItem(pageViewModel, c)));
             this.ShowEmptyCaptures = this.Captures.Count == 0 && this.ShowCaptures;
         }
     }

@@ -58,11 +58,11 @@ namespace Erwine.Leonard.T.RexT.ViewModel.Home
 
         public EvalResultsViewModel() : base() { }
 
-        public EvalResultsViewModel(InputTextItem input, Regex regex, IEnumerable<Match> matches, DataModel.OperationType operationType) :
-            this(input, matches.Select(m => new EvaluationResultItem(m, regex)), operationType) { }
+        public EvalResultsViewModel(PageViewModel pageViewModel, InputTextItem input, Regex regex, IEnumerable<Match> matches, DataModel.OperationType operationType) :
+            this(input, matches.Select(m => new EvaluationResultItem(pageViewModel, m, regex)), operationType) { }
 
-        public EvalResultsViewModel(InputTextItem input, IEnumerable<string> results, DataModel.OperationType operationType) :
-            this(input, results.Select(r => new EvaluationResultItem(r)), operationType) { }
+        public EvalResultsViewModel(PageViewModel pageViewModel, InputTextItem input, IEnumerable<string> results, DataModel.OperationType operationType) :
+            this(input, results.Select(r => new EvaluationResultItem(pageViewModel, r)), operationType) { }
 
         private EvalResultsViewModel(InputTextItem input, IEnumerable<EvaluationResultItem> items, DataModel.OperationType operationType)
         {
